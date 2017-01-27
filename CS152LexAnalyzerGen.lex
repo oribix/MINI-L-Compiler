@@ -97,12 +97,15 @@ ALPHANUM [a-zA-Z0-9]
 "/"		{printf("DIV  \n");currentPos += yyleng;}
 "%"		{printf("MOD \n");currentPos += yyleng;}
 
-  /* {ALPHA}{_*{ALPHANUM}+}* */
-
-  /*{ALPHA}|({ALPHA}({DIGIT}|"_"|{ALPHA})*({DIGIT}|{ALPHA})*)	{printf("IDENT %s\n" ,yytext);currentPos += yyleng;} */
-  
+  /*{ALPHA}|({ALPHA}({DIGIT}|"_"|{ALPHA})*({DIGIT}|{ALPHA})*) */
 {ALPHA}(_*{ALPHANUM}+)*	{printf("IDENT %s\n" ,yytext);currentPos += yyleng;}
 
+  /* _$ {
+    printf("invalid identifier %s\n", yytext);
+    exit(0);
+  } */
+
+  /* 2n case */
 {DIGIT}{ALPHANUM}* {
   printf("invalid identifier %s\n", yytext);
   exit(0);
