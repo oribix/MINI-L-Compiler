@@ -105,11 +105,11 @@ ALPHANUM [a-zA-Z0-9]
     exit(0);
   } */
 
-  /* 2n case */
-{DIGIT}{ALPHANUM}* {
+  /* 2n case {DIGIT}{ALPHANUM}* */
+  /*{DIGIT}(_*{ALPHANUM}+)* {
   printf("invalid identifier %s\n", yytext);
-  exit(0);
-}
+  exit(0);*/
+
 
 {DIGIT}+	{printf("NUMBER %s\n" ,yytext);currentPos += yyleng;}
 
