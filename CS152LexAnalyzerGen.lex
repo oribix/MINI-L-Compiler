@@ -34,7 +34,7 @@
   /*%% Rules %% - Print out anything that is a digit or a math calc otherwise print an error - ignore spaces and newlines*/
 ALPHA [a-zA-Z]
 DIGIT [0-9]
-ALPHANUM [a-zA-Z0-9]
+ALPHANUM {ALPHA}|{DIGIT}
 
 /* Pattern to Match                 Action to do */
 /*print the name of the token on one line followed by lexeme */
