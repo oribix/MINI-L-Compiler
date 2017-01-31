@@ -1,10 +1,9 @@
-all: CS152LexAnalyzerGen.lex
-	flex CS152LexAnalyzerGen.lex && gcc lex.yy.c -lfl
+all: mini_l.lex
+	flex mini_l.lex && gcc -o lexer lex.yy.c -lfl
 
-run: CS152LexAnalyzerGen.lex
-	flex CS152LexAnalyzerGen.lex && gcc lex.yy.c -lfl && ./test.sh
-
+run: mini_l.lex
+	flex mini_l.lex && gcc -o lexer lex.yy.c -lfl && ./test.sh
 
 clean:
-	rm -f ./a.out lex.yy.c
+	rm -f lexer lex.yy.c
 

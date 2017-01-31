@@ -1,7 +1,7 @@
 #!/bin/bash
-for f in *.min
+for f in tests/*.min
 do
   echo -e "$f"\\n
-  ./a.out "$f"
+  ./lexer "$f"
   echo
 done

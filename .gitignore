@@ -1,4 +1,3 @@
-a.out
 *.swp
 lex.yy.c
-*.min
+lexer
