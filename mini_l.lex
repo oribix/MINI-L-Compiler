@@ -53,54 +53,54 @@ IDCHAR    {ALPHANUM}|_
 	/* spaces */
 [[:space:]]+	{currentPos += yyleng;}
 
-"function"	  {printf("FUNCTION \n");currentPos += yyleng;}
-"beginparams"	{printf("BEGIN_PARAMS \n");currentPos += yyleng;}
-"endparams"	  {printf("END_PARAMS \n");currentPos += yyleng;}
-"beginlocals"	{printf("BEGIN_LOCALS \n");currentPos += yyleng;}
-"endlocals"	  {printf("END_LOCALS \n");currentPos += yyleng;}
-"beginbody"	  {printf("BEGIN_BODY \n");currentPos += yyleng;}
-"endbody"	    {printf("END_BODY \n");currentPos += yyleng;}
-"integer"	    {printf("INTEGER \n");currentPos += yyleng;}
-"array"		    {printf("ARRAY \n");currentPos += yyleng;}
-"of"		      {printf("OF \n");currentPos += yyleng;}
-"if"		      {printf("IF \n");currentPos += yyleng;}
-"then"		    {printf("THEN  \n");currentPos += yyleng;}
-"endif"		    {printf("ENDIF  \n");currentPos += yyleng;}
-"else"		    {printf("ELSE  \n");currentPos += yyleng;}
-"while"		    {printf("WHILE  \n");currentPos += yyleng;}
-"do"		      {printf("DO  \n");currentPos += yyleng;}
-"beginloop"	  {printf("BEGINLOOP  \n");currentPos += yyleng;}
-"endloop"	    {printf("ENDLOOP  \n");currentPos += yyleng;}
-"continue"	  {printf("CONTINUE \n");currentPos += yyleng;}
-"read"		    {printf("READ  \n");currentPos += yyleng;}
-"write"		    {printf("WRITE  \n");currentPos += yyleng;}
-"and"		      {printf("AND  \n");currentPos += yyleng;}
-"or"		      {printf("OR  \n");currentPos += yyleng;}
-"not"		      {printf("NOT  \n");currentPos += yyleng;}
-"true"		    {printf("TRUE  \n");currentPos += yyleng;}
-"false"		    {printf("FALSE  \n");currentPos += yyleng;}
+"function"	  {printf("FUNCTION\n");currentPos += yyleng;}
+"beginparams"	{printf("BEGIN_PARAMS\n");currentPos += yyleng;}
+"endparams"	  {printf("END_PARAMS\n");currentPos += yyleng;}
+"beginlocals"	{printf("BEGIN_LOCALS\n");currentPos += yyleng;}
+"endlocals"	  {printf("END_LOCALS\n");currentPos += yyleng;}
+"beginbody"	  {printf("BEGIN_BODY\n");currentPos += yyleng;}
+"endbody"	    {printf("END_BODY\n");currentPos += yyleng;}
+"integer"	    {printf("INTEGER\n");currentPos += yyleng;}
+"array"		    {printf("ARRAY\n");currentPos += yyleng;}
+"of"		      {printf("OF\n");currentPos += yyleng;}
+"if"		      {printf("IF\n");currentPos += yyleng;}
+"then"		    {printf("THEN\n");currentPos += yyleng;}
+"endif"		    {printf("ENDIF\n");currentPos += yyleng;}
+"else"		    {printf("ELSE\n");currentPos += yyleng;}
+"while"		    {printf("WHILE\n");currentPos += yyleng;}
+"do"		      {printf("DO\n");currentPos += yyleng;}
+"beginloop"	  {printf("BEGINLOOP\n");currentPos += yyleng;}
+"endloop"	    {printf("ENDLOOP\n");currentPos += yyleng;}
+"continue"	  {printf("CONTINUE\n");currentPos += yyleng;}
+"read"		    {printf("READ\n");currentPos += yyleng;}
+"write"		    {printf("WRITE\n");currentPos += yyleng;}
+"and"		      {printf("AND\n");currentPos += yyleng;}
+"or"		      {printf("OR\n");currentPos += yyleng;}
+"not"		      {printf("NOT\n");currentPos += yyleng;}
+"true"		    {printf("TRUE\n");currentPos += yyleng;}
+"false"		    {printf("FALSE\n");currentPos += yyleng;}
 
 	/*Comparison Operators */
-"=="  {printf("EQ  \n");currentPos += yyleng;}
-"<>"	{printf("NEQ  \n");currentPos += yyleng;}
-"<="	{printf("LTE  \n");currentPos += yyleng;}
-">="	{printf("GTE   \n");currentPos += yyleng;}
-"<"		{printf("LT  \n");currentPos += yyleng;}
-">"		{printf("GT  \n");currentPos += yyleng;}
-";"		{printf("SEMICOLON   \n");currentPos += yyleng;}
-":"		{printf("COLON   \n");currentPos += yyleng;}
-","		{printf("COMMA   \n");currentPos += yyleng;}
-"("		{printf("L_PAREN   \n");currentPos += yyleng;}
-")"		{printf("R_PAREN   \n");currentPos += yyleng;}
-"["		{printf("L_SQUARE_BRACKET   \n");currentPos += yyleng;}
-"]"		{printf("R_SQUARE_BRACKET   \n");currentPos += yyleng;}
-":="	{printf("ASSIGN    \n");currentPos += yyleng;}
+"=="  {printf("EQ\n");currentPos += yyleng;}
+"<>"	{printf("NEQ\n");currentPos += yyleng;}
+"<="	{printf("LTE\n");currentPos += yyleng;}
+">="	{printf("GTE\n");currentPos += yyleng;}
+"<"		{printf("LT\n");currentPos += yyleng;}
+">"		{printf("GT\n");currentPos += yyleng;}
+";"		{printf("SEMICOLON\n");currentPos += yyleng;}
+":"		{printf("COLON\n");currentPos += yyleng;}
+","		{printf("COMMA\n");currentPos += yyleng;}
+"("		{printf("L_PAREN\n");currentPos += yyleng;}
+")"		{printf("R_PAREN\n");currentPos += yyleng;}
+"["		{printf("L_SQUARE_BRACKET\n");currentPos += yyleng;}
+"]"		{printf("R_SQUARE_BRACKET\n");currentPos += yyleng;}
+":="	{printf("ASSIGN\n");currentPos += yyleng;}
 	/*Arithmetic Operators*/
-"-"		{printf("SUB  \n");currentPos += yyleng;}
-"+"		{printf("ADD  \n");currentPos += yyleng;}
-"*"		{printf("MULT  \n");currentPos += yyleng;}
-"/"		{printf("DIV  \n");currentPos += yyleng;}
-"%"		{printf("MOD \n");currentPos += yyleng;}
+"-"		{printf("SUB\n");currentPos += yyleng;}
+"+"		{printf("ADD\n");currentPos += yyleng;}
+"*"		{printf("MULT\n");currentPos += yyleng;}
+"/"		{printf("DIV\n");currentPos += yyleng;}
+"%"		{printf("MOD\n");currentPos += yyleng;}
 
   /* matches invalid identifiers that end in _ */
 {IDCHAR}*_ {
