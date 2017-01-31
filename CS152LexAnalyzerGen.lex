@@ -29,12 +29,17 @@
 /*#include "y.tab.h"*/
 %{
   int currentLine = 1, currentPos = 1;
+
+  void printErr(){
+    printf("Error at line %d, column %d: ", currentLine, currentPos);
+  }
 %}
 
   /*%% Rules %% - Print out anything that is a digit or a math calc otherwise print an error - ignore spaces and newlines*/
-ALPHA [a-zA-Z]
-DIGIT [0-9]
-ALPHANUM {ALPHA}|{DIGIT}
+ALPHA     [a-zA-Z]
+DIGIT     [0-9]
+ALPHANUM  {ALPHA}|{DIGIT}
+IDCHAR    {ALPHANUM}|_
 
 /* Pattern to Match                 Action to do */
 /*print the name of the token on one line followed by lexeme */
@@ -97,28 +102,36 @@ ALPHANUM {ALPHA}|{DIGIT}
 "/"		{printf("DIV  \n");currentPos += yyleng;}
 "%"		{printf("MOD \n");currentPos += yyleng;}
 
-  /* identifier matcher */
-{ALPHA}(_*{ALPHANUM}+)*	{printf("IDENT %s\n" ,yytext);currentPos += yyleng;}
-
-  /* _*{ALPHANUM}*_$ {
-  printf("invalid identifier %s\n", yytext);
-  exit(0);
-} */
-
-  /* matches invalid identifiers that begin with numbers */
-{DIGIT}+({ALPHA}|_)(_*{ALPHANUM}+)* {
-  printf("invalid identifier %s\n", yytext);
+  /* matches invalid identifiers that end in _ */
+{IDCHAR}*_ {
+  printErr();
+  printf("identifier %s cannot end with an underscore\n", yytext);
   exit(0);
 }
 
+  /* matches invalid identifiers that begin with numbers */
+{DIGIT}+({ALPHA}|_){IDCHAR}* {
+  printErr();
+  printf("identifier %s must begin with a letter\n", yytext);
+  exit(0);
+}
 
+  /* matches invalid identifiers that begin with _ */
+_{IDCHAR}* {
+  printErr();
+  printf("identifier %s must begin with a letter\n", yytext);
+  exit(0);
+}
+
+  /* identifier matcher */
+{ALPHA}(_*{ALPHANUM})*	{printf("IDENT %s\n" ,yytext);currentPos += yyleng;}
+
+  /* number matcher */
 {DIGIT}+	{printf("NUMBER %s\n" ,yytext);currentPos += yyleng;}
 
 . {
-  printf("Error at line %d, column %d unrecognized symbol \"%s\"\n",
-    currentLine,
-    currentPos,
-    yytext);
+  printErr();
+  printf("unrecognized symbol \"%s\"\n", yytext);
   exit(0);
 }
 %%
