@@ -79,6 +79,7 @@ IDCHAR    {ALPHANUM}|_
 "not"		      {printf("NOT\n");currentPos += yyleng;}
 "true"		    {printf("TRUE\n");currentPos += yyleng;}
 "false"		    {printf("FALSE\n");currentPos += yyleng;}
+"return"		  {printf("RETURN\n");currentPos += yyleng;}
 
 	/*Comparison Operators */
 "=="  {printf("EQ\n");currentPos += yyleng;}
