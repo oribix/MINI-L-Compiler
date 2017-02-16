@@ -2,25 +2,26 @@ Program ->
 Function Program | epsilon
 
 
+
 Function ->
-function identifier; beginparams Dec-Loop endparams beginlocals Dec-Loop
-endlocals beginbody Statment-Loop endbody
+function identifier ;
+  beginparams Dec-Loop endparams
+  beginlocals Dec-Loop endlocals
+  beginbody Statement ; Statment-Loop endbody
 
 Dec-Loop ->
 Declaraion ; Dec-Loop | espilon
 
 Statement-Loop ->
-Statement ; Statement-Loop'
+Statement ; Statement-Loop | epsilon
 
-Statement-Loop' ->
-Statement ; Statement-Loop' | epsilon
 
 
 Declaration ->
-identifier Declaration' : Declaration'' integer
+identifier Identifier-Loop : Declaration'' integer
 
-Declaration' ->
-, identifier Declaration' | epsilon
+Identifier-Loop ->
+, identifier Identifier-Loop | epsilon
 
 Declaration'' ->
 array [ number ] of | epsilon
@@ -28,6 +29,25 @@ array [ number ] of | epsilon
 
 
 Statement ->
+Var := Expression |
+if Bool-Exp then Statement ; Statement' endif |
+while Bool-Expr beginloop Statement-Loop endloop |
+do beginloop Statement-Loop endloop while Bool-Expr |
+read Var-Loop |
+write Var-Loop |
+continue |
+return Expression
+
+Statement' ->
+Statement-Loop Statement' | else Statement-Loop | epsilon
+
+
+
+Var-Loop ->
+Var Var-Loop'
+
+Var-Loop' ->
+, Var Var-Loop' | epsilon
 
 
 
@@ -38,11 +58,13 @@ Bool-Expr' ->
 or Relation-And-Expr Bool-Expr' | epsilon
 
 
+
 Relation-And-Expr ->
 Relation-Expr Relation-And-Expr'
 
 Relation-And-Expr' ->
 and Relation-Expr Relation-And-Expr' | epsilon
+
 
 
 Relation-Expr ->
@@ -52,12 +74,56 @@ Relation-Expr' ->
 Expression Comp Expression | true | false | ( Bool-Expr )
 
 
+
+Opt-Not ->
+not | epsilon
+
+
+
 Comp ->
 == | <> | < | > | <= | >=
 
 
-Expression ->
-Multiplicative-Expr Multiplicative-Expr'
 
-Multiplicative-Expr' ->
-+ Multiplicative-Expr' | - Multiplicative-Expr' | epsilon
+Expression ->
+Multiplicative-Expr Expression'
+
+Expression' ->
++ Multiplicative-Expr Expression' | - Multiplicative-Expr Expression' | epsilon
+
+
+
+Multiplicative-Expr ->
+Term Term-Loop
+
+Term-Loop ->
+* term Term-Loop | / term Term-Loop | % term Term-Loop | epsilon
+
+
+
+Term ->
+Opt-Minus Term' | identifier ( Term'' )
+
+Term' ->
+Var | number | ( Expression )
+
+Term''->
+Expression Expression-Loop | epsilon
+
+
+
+Expression-Loop ->
+, Term'' | epsilon
+
+
+
+Opt-Minus ->
+- | epsilon
+
+
+
+Var ->
+identifier Var'
+
+Var' ->
+[ Expression ] | epsilon
