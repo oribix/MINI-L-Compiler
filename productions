@@ -1,0 +1,63 @@
+Program ->
+Function Program | epsilon
+
+
+Function ->
+function identifier; beginparams Dec-Loop endparams beginlocals Dec-Loop
+endlocals beginbody Statment-Loop endbody
+
+Dec-Loop ->
+Declaraion ; Dec-Loop | espilon
+
+Statement-Loop ->
+Statement ; Statement-Loop'
+
+Statement-Loop' ->
+Statement ; Statement-Loop' | epsilon
+
+
+Declaration ->
+identifier Declaration' : Declaration'' integer
+
+Declaration' ->
+, identifier Declaration' | epsilon
+
+Declaration'' ->
+array [ number ] of | epsilon
+
+
+
+Statement ->
+
+
+
+Bool-Expr ->
+Relation-And-Expr Bool-Expr'
+
+Bool-Expr' ->
+or Relation-And-Expr Bool-Expr' | epsilon
+
+
+Relation-And-Expr ->
+Relation-Expr Relation-And-Expr'
+
+Relation-And-Expr' ->
+and Relation-Expr Relation-And-Expr' | epsilon
+
+
+Relation-Expr ->
+Opt-Not Relation-Expr'
+
+Relation-Expr' ->
+Expression Comp Expression | true | false | ( Bool-Expr )
+
+
+Comp ->
+== | <> | < | > | <= | >=
+
+
+Expression ->
+Multiplicative-Expr Multiplicative-Expr'
+
+Multiplicative-Expr' ->
++ Multiplicative-Expr' | - Multiplicative-Expr' | epsilon
