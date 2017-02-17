@@ -16,7 +16,7 @@ int yylex(void);
 //3) describe operation procedures
 //4) data type of sematic values of vairous symboles
 
-
+%start	input 
 
 %token FUNCTION
 %token BEGINPARAMS
@@ -39,50 +39,57 @@ int yylex(void);
 %token CONTINUE
 %token READ
 %token WRITE
-%token AND
-%token OR
-%token NOT
+%left AND
+%left OR
+%right NOT
 %token TRUE
 %token FALSE
 
-==
-<>
-<=
->=
-<
->
-;
-:
-,
-(
-)
-[
-]
-:=
--
-+
-*
-/
-%
+%token EQ
+%left NEG
+%left LTE
+%left GTE
+%left LT
+%left GT
+
+%token SEMICOLON
+%token COLON
+%token COMMA
+
+%left L_PAREN R_PAREN
+%left L_SQUARE_BRACKET R_SQUARE_BRACKET
+
+%right ASSIGN
+
+%right SUB
+
+%left ADD
+%left MULT
+%left DIV
+%left MOD
 
 
 
+
+
+/*return files in lex  - links
 %union{
-  int		int_val;
-  string*	op_val;
+  int	value;
+  char * string;
 }
 
-%start	input 
+
 
 %token	<int_val>	INTEGER_LITERAL
 %type	<int_val>	exp
-%left	PLUS
-%left	MULT
+
+
+
 
 //grammer rules - how to construct each nontermiasnl symblo from its parts
 
 %%
-
+0
   /*
   input:	//empty	
   		| exp	{ cout << "Result: " << $1 << endl; }
@@ -92,7 +99,7 @@ int yylex(void);
   		| exp PLUS exp	{ $$ = $1 + $3; }
   		| exp MULT exp	{ $$ = $1 * $3; }
   		;
-  */
+  */ 
 
 Program : Function Program | epsilon
 
