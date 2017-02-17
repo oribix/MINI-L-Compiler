@@ -13,34 +13,46 @@ Dec-Loop ->
 Declaraion ; Dec-Loop | espilon
 
 Statement-Loop ->
-Statement ; Statement-Loop | epsilon
+Statement ; Statement-Loop'
+
+Statement-Loop' ->
+Statement ; Statement-Loop' | epsilon
 
 
 
 Declaration ->
-identifier Identifier-Loop : Declaration'' integer
+identifier Identifier-Loop : Declaration' integer
+
+Declaration' ->
+array [ number ] of | epsilon
 
 Identifier-Loop ->
 , identifier Identifier-Loop | epsilon
 
-Declaration'' ->
-array [ number ] of | epsilon
-
 
 
 Statement ->
-Var := Expression |
-if Bool-Exp then Statement ; Statement' endif |
-while Bool-Expr beginloop Statement-Loop endloop |
-do beginloop Statement-Loop endloop while Bool-Expr |
-read Var-Loop |
-write Var-Loop |
-continue |
-return Expression
+Assignment | If-Statement | While-Loop | Do-While | read Var-Loop |
+  write Var-Loop | continue | return Expression
 
-Statement' ->
-Statement-Loop Statement' | else Statement-Loop | epsilon
 
+Assignment->
+Var := Expression
+
+
+If-Statement ->
+if Bool-Expr then Statement-Loop Opt-Else endif
+
+Opt-Else ->
+else Statement-Loop | epsilon
+
+
+While-Loop ->
+while Bool-Expr beginloop Statement-Loop endloop
+
+
+Do-While ->
+do beginloop Statement-Loop endloop while Bool-Expr
 
 
 Var-Loop ->
@@ -74,7 +86,6 @@ Relation-Expr' ->
 Expression Comp Expression | true | false | ( Bool-Expr )
 
 
-
 Opt-Not ->
 not | epsilon
 
@@ -89,15 +100,20 @@ Expression ->
 Multiplicative-Expr Expression'
 
 Expression' ->
-+ Multiplicative-Expr Expression' | - Multiplicative-Expr Expression' | epsilon
+PM-OP Multiplicative-Expr Expression' | epsilon
 
+PM-OP ->
++ | -
 
 
 Multiplicative-Expr ->
 Term Term-Loop
 
 Term-Loop ->
-* term Term-Loop | / term Term-Loop | % term Term-Loop | epsilon
+Mult-OP term Term-Loop | epsilon
+
+Mult-OP ->
+* | / | %
 
 
 
@@ -108,17 +124,16 @@ Term' ->
 Var | number | ( Expression )
 
 Term''->
-Expression Expression-Loop | epsilon
-
-
-
-Expression-Loop ->
-, Term'' | epsilon
-
-
+Expression-Loop | epsilon
 
 Opt-Minus ->
 - | epsilon
+
+Expression-Loop ->
+Expression Expression-Loop' | epsilon
+
+Expression-Loop' ->
+, Expression Expression-Loop | epsilon
 
 
 
