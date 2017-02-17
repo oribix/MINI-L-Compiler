@@ -16,7 +16,7 @@ int yylex(void);
 //3) describe operation procedures
 //4) data type of sematic values of vairous symboles
 
-%start	input 
+%start  input 
 
 %token FUNCTION
 %token BEGINPARAMS
@@ -68,154 +68,157 @@ int yylex(void);
 %left DIV
 %left MOD
 
-
-
-
-
-/*return files in lex  - links
 %union{
-  int	value;
+  int value;
   char * string;
 }
-
-
-
-%token	<int_val>	INTEGER_LITERAL
-%type	<int_val>	exp
-
-
 
 
 //grammer rules - how to construct each nontermiasnl symblo from its parts
 
 %%
-0
-  /*
-  input:	//empty	
-  		| exp	{ cout << "Result: " << $1 << endl; }
-  		;
 
-  exp:		INTEGER_LITERAL	{ $$ = $1; }
-  		| exp PLUS exp	{ $$ = $1 + $3; }
-  		| exp MULT exp	{ $$ = $1 * $3; }
-  		;
-  */ 
+Program : Function Program | /* epsilon */;
+;
 
-Program : Function Program | epsilon
+Function : FUNCTION IDENTIFIER SEMICOLON
+  BEGINPARAMS DecLoop ENDPARAMS
+  BEGINLOCALS DecLoop ENDLOCALS
+  BEGINBODY Statement SEMICOLON StatmentLoop ENDBODY
+  ;
+;
 
-Function : function identifier ;
-  beginparams Dec-Loop endparams
-  beginlocals Dec-Loop endlocals
-  beginbody Statement ; Statment-Loop endbody
+DecLoop : Declaration SEMICOLON DecLoop | /* epsilon */
+;
 
-Dec-Loop : Declaraion ; Dec-Loop | espilon
+StatementLoop : Statement SEMICOLON StatementLoop_
+;
 
-Statement-Loop : Statement ; Statement-Loop'
-
-Statement-Loop' : Statement ; Statement-Loop' | epsilon
+StatementLoop_ : Statement SEMICOLON StatementLoop_ | /* epsilon */
+;
 
 
 
-Declaration : identifier Identifier-Loop : Declaration' integer
+Declaration : IDENTIFIER IdentifierLoop : Declaration_ INTEGER
+;
 
-Declaration' : array [ number ] of | epsilon
+Declaration_ : ARRAY [ NUMBER ] OF | /* epsilon */
+;
 
-Identifier-Loop : , identifier Identifier-Loop | epsilon
-
-
-
-Statement : Assignment | If-Statement | While-Loop | Do-While | read Var-Loop |
-  write Var-Loop | continue | return Expression
-
-
-Assignment: Var := Expression
-
-
-If-Statement : if Bool-Expr then Statement-Loop Opt-Else endif
-
-Opt-Else : else Statement-Loop | epsilon
-
-
-While-Loop : while Bool-Expr beginloop Statement-Loop endloop
-
-
-Do-While : do beginloop Statement-Loop endloop while Bool-Expr
-
-
-Var-Loop : Var Var-Loop'
-
-Var-Loop' : , Var Var-Loop' | epsilon
+IdentifierLoop : , IDENTIFIER IdentifierLoop | /* epsilon */
+;
 
 
 
-Bool-Expr : Relation-And-Expr Bool-Expr'
-
-Bool-Expr' : or Relation-And-Expr Bool-Expr' | epsilon
-
-
-
-Relation-And-Expr : Relation-Expr Relation-And-Expr'
-
-Relation-And-Expr' : and Relation-Expr Relation-And-Expr' | epsilon
+Statement : Assignment | IfStatement | WhileLoop | DoWhile | READ VarLoop |
+  WRITE VarLoop | CONTINUE | RETURN Expression
+;
 
 
-
-Relation-Expr : Opt-Not Relation-Expr'
-
-Relation-Expr' : Expression Comp Expression | true | false | ( Bool-Expr )
+Assignment : Var := Expression
 
 
-Opt-Not : not | epsilon
+IfStatement : IF BoolExpr THEN StatementLoop OptElse ENDIF
+;
+
+OptElse : ELSE StatementLoop | /* epsilon */
+;
+
+
+WhileLoop : WHILE BoolExpr BEGINLOOP StatementLoop ENDLOOP
+;
+
+
+DoWhile : DO BEGINLOOP StatementLoop ENDLOOP WHILE BoolExpr
+;
+
+
+VarLoop : Var VarLoop_
+;
+
+VarLoop_ : , Var VarLoop_ | /* epsilon */
+;
+
+
+
+BoolExpr : RelationAndExpr BoolExpr_
+;
+
+BoolExpr_ : OR RelationAndExpr BoolExpr_ | /* epsilon */
+;
+
+
+
+RelationAndExpr : RelationExpr RelationAndExpr_
+;
+
+RelationAndExpr_ : AND RelationExpr RelationAndExpr_ | /* epsilon */
+;
+
+
+
+RelationExpr : OptNot RelationExpr_
+;
+
+RelationExpr_ : Expression Comp Expression | TRUE | FALSE | ( BoolExpr )
+;
+
+
+OptNot : NOT | /* epsilon */
+;
 
 
 
 Comp : == | <> | < | > | <= | >=
+;
 
 
 
-Expression : Multiplicative-Expr Expression'
+Expression : MultiplicativeExpr Expression_
+;
 
-Expression' : PM-OP Multiplicative-Expr Expression' | epsilon
+Expression_ : PMOP MultiplicativeExpr Expression_ | /* epsilon */
+;
 
-PM-OP : + | -
-
-
-Multiplicative-Expr : Term Term-Loop
-
-Term-Loop : Mult-OP term Term-Loop | epsilon
-
-Mult-OP : * | / | %
+PMOP : + | -
+;
 
 
+MultiplicativeExpr : Term TermLoop
+;
 
-Term : Opt-Minus Term' | identifier ( Term'' )
+TermLoop : MultOP TERM TermLoop | /* epsilon */
+;
 
-Term' : Var | number | ( Expression )
-
-Term'': Expression-Loop | epsilon
-
-Opt-Minus : - | epsilon
-
-Expression-Loop : Expression Expression-Loop' | epsilon
-
-Expression-Loop' : , Expression Expression-Loop | epsilon
+MultOP : * | / | %
+;
 
 
 
-Var : identifier Var'
+Term : OptMinus Term_ | IDENTIFIER ( Term__ )
+;
 
-Var' : [ Expression ] | epsilon
+Term_ : Var | NUMBER | ( Expression )
+;
+
+Term__ : ExpressionLoop | /* epsilon */
+
+OptMinus : - | /* epsilon */
+;
+
+ExpressionLoop : Expression ExpressionLoop_ | /* epsilon */
+;
+
+ExpressionLoop_ : , Expression ExpressionLoop | /* epsilon */
+;
 
 
 
-//Mult-OP ->  * | / | %
-Mult-OP:	INTEGER_LITERAL	{ $$ = $1; }
-		| term MULT term { $$ = $1 * $3; }
-		| term DIV term	{ $$ = $1 / $3; }
-		| term PERC term { $$ = $1 % $3; }
-		;
+Var : IDENTIFIER Var_
+;
 
-
+Var_ : [ Expression ] | /* epsilon */
+;
 
 %%
 
@@ -223,8 +226,8 @@ Mult-OP:	INTEGER_LITERAL	{ $$ = $1; }
 
 int yyerror(string s)
 {
-  extern int yylineno;	// defined and maintained in lex.c
-  extern char *yytext;	// defined and maintained in lex.c
+  extern int yylineno;  // defined and maintained in lex.c
+  extern char *yytext;  // defined and maintained in lex.c
   
   cerr << "ERROR: " << s << " at symbol \"" << yytext;
   cerr << "\" on line " << yylineno << endl;
