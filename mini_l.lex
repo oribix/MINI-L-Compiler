@@ -28,6 +28,9 @@
 /* include headers here to include */
 /*#include "y.tab.h"*/
 %{
+  #include "heading.h"
+  #include "tok.h"
+
   int currentLine = 1, currentPos = 1;
 
   void printErr(){
@@ -44,63 +47,64 @@ IDCHAR    {ALPHANUM}|_
 /* Pattern to Match                 Action to do */
 /*print the name of the token on one line followed by lexeme */
 %%
-	/*newlines*/
+  /*newlines*/
 "\n" {currentLine++; currentPos = 1;}
 
-	/* Ignore Comments */
-"##".*		    {currentPos += yyleng;}
+  /* Ignore Comments */
+"##".*        {currentPos += yyleng;}
 
-	/* spaces */
-[[:space:]]+	{currentPos += yyleng;}
+  /* spaces */
+[[:space:]]+  {currentPos += yyleng;}
 
-"function"	  {printf("FUNCTION\n");currentPos += yyleng; return FUNCTION;}
-"beginparams"	{printf("BEGIN_PARAMS\n");currentPos += yyleng; return BEGIN_PARAMS;}
-"endparams"	  {printf("END_PARAMS\n");currentPos += yyleng; return END_PARAMS;}
-"beginlocals"	{printf("BEGIN_LOCALS\n");currentPos += yyleng; return BEGIN_LOCALS;}
-"endlocals"	  {printf("END_LOCALS\n");currentPos += yyleng; return END_LOCALS;}
-"beginbody"	  {printf("BEGIN_BODY\n");currentPos += yyleng; return BEGIN_BODY;}
-"endbody"	    {printf("END_BODY\n");currentPos += yyleng; return END_BODY;}
-"integer"	    {printf("INTEGER\n");currentPos += yyleng; return INTEGER;}
-"array"		    {printf("ARRAY\n");currentPos += yyleng; return ARRAY;}
-"of"		      {printf("OF\n");currentPos += yyleng; return OF;}
-"if"		      {printf("IF\n");currentPos += yyleng; return IF;}
-"then"		    {printf("THEN\n");currentPos += yyleng; return THEN;}
-"endif"		    {printf("ENDIF\n");currentPos += yyleng; return ENDIF;}
-"else"		    {printf("ELSE\n");currentPos += yyleng; return ELSE;}
-"while"		    {printf("WHILE\n");currentPos += yyleng; return WHILE;}
-"do"		      {printf("DO\n");currentPos += yyleng; return DO;}
-"beginloop"	  {printf("BEGINLOOP\n");currentPos += yyleng; return BEGINLOOP;}
-"endloop"	    {printf("ENDLOOP\n");currentPos += yyleng; return ENDLOOP;}
-"continue"	  {printf("CONTINUE\n");currentPos += yyleng; return CONTINUE;}
-"read"		    {printf("READ\n");currentPos += yyleng; return READ;}
-"write"		    {printf("WRITE\n");currentPos += yyleng; return WRITE;}
-"and"		      {printf("AND\n");currentPos += yyleng; return AND;}
-"or"		      {printf("OR\n");currentPos += yyleng; return OR;}
-"not"		      {printf("NOT\n");currentPos += yyleng; return NOT;}
-"true"		    {printf("TRUE\n");currentPos += yyleng; return TRUE;}
-"false"		    {printf("FALSE\n");currentPos += yyleng; return FALSE;}
+"function"    {currentPos += yyleng; return FUNCTION;}
+"beginparams" {currentPos += yyleng; return BEGIN_PARAMS;}
+"endparams"   {currentPos += yyleng; return END_PARAMS;}
+"beginlocals" {currentPos += yyleng; return BEGIN_LOCALS;}
+"endlocals"   {currentPos += yyleng; return END_LOCALS;}
+"beginbody"   {currentPos += yyleng; return BEGIN_BODY;}
+"endbody"     {currentPos += yyleng; return END_BODY;}
+"integer"     {currentPos += yyleng; return INTEGER;}
+"array"       {currentPos += yyleng; return ARRAY;}
+"of"          {currentPos += yyleng; return OF;}
+"if"          {currentPos += yyleng; return IF;}
+"then"        {currentPos += yyleng; return THEN;}
+"endif"       {currentPos += yyleng; return ENDIF;}
+"else"        {currentPos += yyleng; return ELSE;}
+"while"       {currentPos += yyleng; return WHILE;}
+"do"          {currentPos += yyleng; return DO;}
+"beginloop"   {currentPos += yyleng; return BEGINLOOP;}
+"endloop"     {currentPos += yyleng; return ENDLOOP;}
+"continue"    {currentPos += yyleng; return CONTINUE;}
+"read"        {currentPos += yyleng; return READ;}
+"write"       {currentPos += yyleng; return WRITE;}
+"and"         {currentPos += yyleng; return AND;}
+"or"          {currentPos += yyleng; return OR;}
+"not"         {currentPos += yyleng; return NOT;}
+"true"        {currentPos += yyleng; return TRUE;}
+"false"       {currentPos += yyleng; return FALSE;}
 
-	/*Comparison Operators */
-"=="  {printf("EQ\n");currentPos += yyleng; return EQ;}
-"<>"	{printf("NEQ\n");currentPos += yyleng; return NEQ;}
-"<="	{printf("LTE\n");currentPos += yyleng; return LTE;}
-">="	{printf("GTE\n");currentPos += yyleng; return GTE;}
-"<"		{printf("LT\n");currentPos += yyleng; return LT;}
-">"		{printf("GT\n");currentPos += yyleng; return GT;}
-";"		{printf("SEMICOLON\n");currentPos += yyleng; return SEMICOLON;}
-":"		{printf("COLON\n");currentPos += yyleng; return COLON;}
-","		{printf("COMMA\n");currentPos += yyleng; return COMMA;}
-"("		{printf("L_PAREN\n");currentPos += yyleng; return L_PAREN;}
-")"		{printf("R_PAREN\n");currentPos += yyleng; return R_PAREN;}
-"["		{printf("L_SQUARE_BRACKET\n");currentPos += yyleng; return L_SQUARE_BRACKET;}
-"]"		{printf("R_SQUARE_BRACKET\n");currentPos += yyleng; return R_SQUARE_BRACKET;}
-":="	{printf("ASSIGN\n");currentPos += yyleng; return ASSIGN;}
-	/*Arithmetic Operators*/
-"-"		{printf("SUB\n");currentPos += yyleng; return SUB;}
-"+"		{printf("ADD\n");currentPos += yyleng; return ADD;}
-"*"		{printf("MULT\n");currentPos += yyleng; return MULT;}
-"/"		{printf("DIV\n");currentPos += yyleng; return DIV;}
-"%"		{printf("MOD\n");currentPos += yyleng; return MOD;}
+  /*Comparison Operators */
+"=="  {currentPos += yyleng; return EQ;}
+"<>"  {currentPos += yyleng; return NEQ;}
+"<="  {currentPos += yyleng; return LTE;}
+">="  {currentPos += yyleng; return GTE;}
+"<"   {currentPos += yyleng; return LT;}
+">"   {currentPos += yyleng; return GT;}
+";"   {currentPos += yyleng; return SEMICOLON;}
+":"   {currentPos += yyleng; return COLON;}
+","   {currentPos += yyleng; return COMMA;}
+"("   {currentPos += yyleng; return L_PAREN;}
+")"   {currentPos += yyleng; return R_PAREN;}
+"["   {currentPos += yyleng; return L_SQUARE_BRACKET;}
+"]"   {currentPos += yyleng; return R_SQUARE_BRACKET;}
+":="  {currentPos += yyleng; return ASSIGN;}
+
+  /*Arithmetic Operators*/
+"-"   {currentPos += yyleng; return SUB;}
+"+"   {currentPos += yyleng; return ADD;}
+"*"   {currentPos += yyleng; return MULT;}
+"/"   {currentPos += yyleng; return DIV;}
+"%"   {currentPos += yyleng; return MOD;}
 
   /* matches invalid identifiers that end in _ */
 {IDCHAR}*_ {
@@ -124,10 +128,10 @@ _{IDCHAR}* {
 }
 
   /* identifier matcher */
-{ALPHA}(_*{ALPHANUM})*	{printf("IDENT %s\n" ,yytext);currentPos += yyleng;}
+{ALPHA}(_*{ALPHANUM})*  {yylval.string = strdup(yytext); currentPos += yyleng;}
 
   /* number matcher */
-{DIGIT}+	{printf("NUMBER %s\n" ,yytext);currentPos += yyleng;}
+{DIGIT}+  {yylval.value = atoi(yytext); currentPos += yyleng;}
 
 . {
   printErr();
@@ -142,10 +146,10 @@ int main(int argc, char **argv)
 {
   /* argv - pointer to the row in the vector, argc is the count */
   /* ++argv move the pointer to the next item in the vector */
-  /* --argv decrement the number of items in the count  	*/
+  /* --argv decrement the number of items in the count    */
   /* skip over program name */
   ++argv, --argc;
-  if (argc > 0	)
+  if (argc > 0 )
     yyin = fopen(argv[0], "r");
   else
     yyin =stdin;
