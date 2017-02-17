@@ -53,54 +53,54 @@ IDCHAR    {ALPHANUM}|_
 	/* spaces */
 [[:space:]]+	{currentPos += yyleng;}
 
-"function"	  {printf("FUNCTION\n");currentPos += yyleng;}
-"beginparams"	{printf("BEGIN_PARAMS\n");currentPos += yyleng;}
-"endparams"	  {printf("END_PARAMS\n");currentPos += yyleng;}
-"beginlocals"	{printf("BEGIN_LOCALS\n");currentPos += yyleng;}
-"endlocals"	  {printf("END_LOCALS\n");currentPos += yyleng;}
-"beginbody"	  {printf("BEGIN_BODY\n");currentPos += yyleng;}
-"endbody"	    {printf("END_BODY\n");currentPos += yyleng;}
-"integer"	    {printf("INTEGER\n");currentPos += yyleng;}
-"array"		    {printf("ARRAY\n");currentPos += yyleng;}
-"of"		      {printf("OF\n");currentPos += yyleng;}
-"if"		      {printf("IF\n");currentPos += yyleng;}
-"then"		    {printf("THEN\n");currentPos += yyleng;}
-"endif"		    {printf("ENDIF\n");currentPos += yyleng;}
-"else"		    {printf("ELSE\n");currentPos += yyleng;}
-"while"		    {printf("WHILE\n");currentPos += yyleng;}
-"do"		      {printf("DO\n");currentPos += yyleng;}
-"beginloop"	  {printf("BEGINLOOP\n");currentPos += yyleng;}
-"endloop"	    {printf("ENDLOOP\n");currentPos += yyleng;}
-"continue"	  {printf("CONTINUE\n");currentPos += yyleng;}
-"read"		    {printf("READ\n");currentPos += yyleng;}
-"write"		    {printf("WRITE\n");currentPos += yyleng;}
-"and"		      {printf("AND\n");currentPos += yyleng;}
-"or"		      {printf("OR\n");currentPos += yyleng;}
-"not"		      {printf("NOT\n");currentPos += yyleng;}
-"true"		    {printf("TRUE\n");currentPos += yyleng;}
-"false"		    {printf("FALSE\n");currentPos += yyleng;}
+"function"	  {printf("FUNCTION\n");currentPos += yyleng; return FUNCTION;}
+"beginparams"	{printf("BEGIN_PARAMS\n");currentPos += yyleng; return BEGIN_PARAMS;}
+"endparams"	  {printf("END_PARAMS\n");currentPos += yyleng; return END_PARAMS;}
+"beginlocals"	{printf("BEGIN_LOCALS\n");currentPos += yyleng; return BEGIN_LOCALS;}
+"endlocals"	  {printf("END_LOCALS\n");currentPos += yyleng; return END_LOCALS;}
+"beginbody"	  {printf("BEGIN_BODY\n");currentPos += yyleng; return BEGIN_BODY;}
+"endbody"	    {printf("END_BODY\n");currentPos += yyleng; return END_BODY;}
+"integer"	    {printf("INTEGER\n");currentPos += yyleng; return INTEGER;}
+"array"		    {printf("ARRAY\n");currentPos += yyleng; return ARRAY;}
+"of"		      {printf("OF\n");currentPos += yyleng; return OF;}
+"if"		      {printf("IF\n");currentPos += yyleng; return IF;}
+"then"		    {printf("THEN\n");currentPos += yyleng; return THEN;}
+"endif"		    {printf("ENDIF\n");currentPos += yyleng; return ENDIF;}
+"else"		    {printf("ELSE\n");currentPos += yyleng; return ELSE;}
+"while"		    {printf("WHILE\n");currentPos += yyleng; return WHILE;}
+"do"		      {printf("DO\n");currentPos += yyleng; return DO;}
+"beginloop"	  {printf("BEGINLOOP\n");currentPos += yyleng; return BEGINLOOP;}
+"endloop"	    {printf("ENDLOOP\n");currentPos += yyleng; return ENDLOOP;}
+"continue"	  {printf("CONTINUE\n");currentPos += yyleng; return CONTINUE;}
+"read"		    {printf("READ\n");currentPos += yyleng; return READ;}
+"write"		    {printf("WRITE\n");currentPos += yyleng; return WRITE;}
+"and"		      {printf("AND\n");currentPos += yyleng; return AND;}
+"or"		      {printf("OR\n");currentPos += yyleng; return OR;}
+"not"		      {printf("NOT\n");currentPos += yyleng; return NOT;}
+"true"		    {printf("TRUE\n");currentPos += yyleng; return TRUE;}
+"false"		    {printf("FALSE\n");currentPos += yyleng; return FALSE;}
 
 	/*Comparison Operators */
-"=="  {printf("EQ\n");currentPos += yyleng;}
-"<>"	{printf("NEQ\n");currentPos += yyleng;}
-"<="	{printf("LTE\n");currentPos += yyleng;}
-">="	{printf("GTE\n");currentPos += yyleng;}
-"<"		{printf("LT\n");currentPos += yyleng;}
-">"		{printf("GT\n");currentPos += yyleng;}
-";"		{printf("SEMICOLON\n");currentPos += yyleng;}
-":"		{printf("COLON\n");currentPos += yyleng;}
-","		{printf("COMMA\n");currentPos += yyleng;}
-"("		{printf("L_PAREN\n");currentPos += yyleng;}
-")"		{printf("R_PAREN\n");currentPos += yyleng;}
-"["		{printf("L_SQUARE_BRACKET\n");currentPos += yyleng;}
-"]"		{printf("R_SQUARE_BRACKET\n");currentPos += yyleng;}
-":="	{printf("ASSIGN\n");currentPos += yyleng;}
+"=="  {printf("EQ\n");currentPos += yyleng; return EQ;}
+"<>"	{printf("NEQ\n");currentPos += yyleng; return NEQ;}
+"<="	{printf("LTE\n");currentPos += yyleng; return LTE;}
+">="	{printf("GTE\n");currentPos += yyleng; return GTE;}
+"<"		{printf("LT\n");currentPos += yyleng; return LT;}
+">"		{printf("GT\n");currentPos += yyleng; return GT;}
+";"		{printf("SEMICOLON\n");currentPos += yyleng; return SEMICOLON;}
+":"		{printf("COLON\n");currentPos += yyleng; return COLON;}
+","		{printf("COMMA\n");currentPos += yyleng; return COMMA;}
+"("		{printf("L_PAREN\n");currentPos += yyleng; return L_PAREN;}
+")"		{printf("R_PAREN\n");currentPos += yyleng; return R_PAREN;}
+"["		{printf("L_SQUARE_BRACKET\n");currentPos += yyleng; return L_SQUARE_BRACKET;}
+"]"		{printf("R_SQUARE_BRACKET\n");currentPos += yyleng; return R_SQUARE_BRACKET;}
+":="	{printf("ASSIGN\n");currentPos += yyleng; return ASSIGN;}
 	/*Arithmetic Operators*/
-"-"		{printf("SUB\n");currentPos += yyleng;}
-"+"		{printf("ADD\n");currentPos += yyleng;}
-"*"		{printf("MULT\n");currentPos += yyleng;}
-"/"		{printf("DIV\n");currentPos += yyleng;}
-"%"		{printf("MOD\n");currentPos += yyleng;}
+"-"		{printf("SUB\n");currentPos += yyleng; return SUB;}
+"+"		{printf("ADD\n");currentPos += yyleng; return ADD;}
+"*"		{printf("MULT\n");currentPos += yyleng; return MULT;}
+"/"		{printf("DIV\n");currentPos += yyleng; return DIV;}
+"%"		{printf("MOD\n");currentPos += yyleng; return MOD;}
 
   /* matches invalid identifiers that end in _ */
 {IDCHAR}*_ {
