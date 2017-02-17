@@ -85,7 +85,6 @@ Function : FUNCTION IDENTIFIER SEMICOLON
   BEGINPARAMS DecLoop ENDPARAMS
   BEGINLOCALS DecLoop ENDLOCALS
   BEGINBODY Statement SEMICOLON StatmentLoop ENDBODY
-  ;
 ;
 
 DecLoop : Declaration SEMICOLON DecLoop | /* epsilon */
