@@ -128,10 +128,18 @@ _{IDCHAR}* {
 }
 
   /* identifier matcher */
-{ALPHA}(_*{ALPHANUM})*  {yylval.string = strdup(yytext); currentPos += yyleng;}
+{ALPHA}(_*{ALPHANUM})*  {
+  yylval.string = strdup(yytext);
+  currentPos += yyleng;
+  return IDENTIFIER;
+}
 
   /* number matcher */
-{DIGIT}+  {yylval.value = atoi(yytext); currentPos += yyleng;}
+{DIGIT}+ {
+  yylval.value = atoi(yytext);
+  currentPos += yyleng;
+  return NUMBER;
+}
 
 . {
   printErr();

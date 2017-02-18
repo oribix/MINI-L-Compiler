@@ -16,7 +16,7 @@ int yylex(void);
 //3) describe operation procedures
 //4) data type of sematic values of vairous symboles
 
-%start  input 
+%start Program 
 
 %token FUNCTION
 %token BEGINPARAMS
@@ -101,10 +101,10 @@ StatementLoop_ : Statement SEMICOLON StatementLoop_ | /* epsilon */
 Declaration : IDENTIFIER IdentifierLoop : Declaration_ INTEGER
 ;
 
-Declaration_ : ARRAY [ NUMBER ] OF | /* epsilon */
+Declaration_ : ARRAY L_SQUARE_BRACKET NUMBER R_SQUARE_BRACKET OF | /* epsilon */
 ;
 
-IdentifierLoop : , IDENTIFIER IdentifierLoop | /* epsilon */
+IdentifierLoop : COMMA IDENTIFIER IdentifierLoop | /* epsilon */
 ;
 
 
@@ -114,7 +114,7 @@ Statement : Assignment | IfStatement | WhileLoop | DoWhile | READ VarLoop |
 ;
 
 
-Assignment : Var := Expression
+Assignment : Var ASSIGN Expression
 
 
 IfStatement : IF BoolExpr THEN StatementLoop OptElse ENDIF
@@ -135,7 +135,7 @@ DoWhile : DO BEGINLOOP StatementLoop ENDLOOP WHILE BoolExpr
 VarLoop : Var VarLoop_
 ;
 
-VarLoop_ : , Var VarLoop_ | /* epsilon */
+VarLoop_ : COMMA Var VarLoop_ | /* epsilon */
 ;
 
 
@@ -159,7 +159,8 @@ RelationAndExpr_ : AND RelationExpr RelationAndExpr_ | /* epsilon */
 RelationExpr : OptNot RelationExpr_
 ;
 
-RelationExpr_ : Expression Comp Expression | TRUE | FALSE | ( BoolExpr )
+RelationExpr_ : Expression Comp Expression | TRUE | FALSE
+  | L_PAREN BoolExpr R_PAREN
 ;
 
 
@@ -168,7 +169,7 @@ OptNot : NOT | /* epsilon */
 
 
 
-Comp : == | <> | < | > | <= | >=
+Comp : EQ | NEG | LT | GT | LTE | GTE
 ;
 
 
@@ -179,7 +180,7 @@ Expression : MultiplicativeExpr Expression_
 Expression_ : PMOP MultiplicativeExpr Expression_ | /* epsilon */
 ;
 
-PMOP : + | -
+PMOP : ADD | SUB
 ;
 
 
@@ -189,26 +190,26 @@ MultiplicativeExpr : Term TermLoop
 TermLoop : MultOP TERM TermLoop | /* epsilon */
 ;
 
-MultOP : * | / | %
+MultOP : MULT | DIV | MOD
 ;
 
 
 
-Term : OptMinus Term_ | IDENTIFIER ( Term__ )
+Term : OptMinus Term_ | IDENTIFIER L_PAREN Term__ R_PAREN
 ;
 
-Term_ : Var | NUMBER | ( Expression )
+Term_ : Var | NUMBER | L_PAREN Expression R_PAREN
 ;
 
 Term__ : ExpressionLoop | /* epsilon */
 
-OptMinus : - | /* epsilon */
+OptMinus : SUB | /* epsilon */
 ;
 
 ExpressionLoop : Expression ExpressionLoop_ | /* epsilon */
 ;
 
-ExpressionLoop_ : , Expression ExpressionLoop | /* epsilon */
+ExpressionLoop_ : COMMA Expression ExpressionLoop | /* epsilon */
 ;
 
 
@@ -216,20 +217,19 @@ ExpressionLoop_ : , Expression ExpressionLoop | /* epsilon */
 Var : IDENTIFIER Var_
 ;
 
-Var_ : [ Expression ] | /* epsilon */
+Var_ : L_SQUARE_BRACKET Expression R_SQUARE_BRACKET | /* epsilon */
 ;
 
 %%
 
 //epilogue - declation of function declared in prologue
 
-int yyerror(string s)
+int yyerror(char* s)
 {
   extern int yylineno;  // defined and maintained in lex.c
   extern char *yytext;  // defined and maintained in lex.c
   
-  cerr << "ERROR: " << s << " at symbol \"" << yytext;
-  cerr << "\" on line " << yylineno << endl;
+  fprintf(stderr, "ERROR: %s at symbol \"%s\" on line %d", s, yytext, yylineno);
   exit(1);
 }
 
