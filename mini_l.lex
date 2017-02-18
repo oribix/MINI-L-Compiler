@@ -82,6 +82,7 @@ IDCHAR    {ALPHANUM}|_
 "not"         {currentPos += yyleng; return NOT;}
 "true"        {currentPos += yyleng; return TRUE;}
 "false"       {currentPos += yyleng; return FALSE;}
+"return"      {currentPos += yyleng; return RETURN;}
 
   /*Comparison Operators */
 "=="  {currentPos += yyleng; return EQ;}
