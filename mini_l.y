@@ -16,7 +16,7 @@ int yylex(void);
 //3) describe operation procedures
 //4) data type of sematic values of vairous symboles
 
-%start Program 
+%start Program
 
 %token FUNCTION
 %token BEGINPARAMS
@@ -44,6 +44,7 @@ int yylex(void);
 %right NOT
 %token TRUE
 %token FALSE
+%token RETURN
 
 %token EQ
 %left NEG
@@ -68,6 +69,9 @@ int yylex(void);
 %left DIV
 %left MOD
 
+%token NUMBER
+%token IDENTIFIER
+
 %union{
   int value;
   char * string;
@@ -78,13 +82,13 @@ int yylex(void);
 
 %%
 
-Program : Function Program | /* epsilon */;
+Program : Function Program | /* epsilon */
 ;
 
 Function : FUNCTION IDENTIFIER SEMICOLON
   BEGINPARAMS DecLoop ENDPARAMS
   BEGINLOCALS DecLoop ENDLOCALS
-  BEGINBODY Statement SEMICOLON StatmentLoop ENDBODY
+  BEGINBODY Statement SEMICOLON StatementLoop ENDBODY
 ;
 
 DecLoop : Declaration SEMICOLON DecLoop | /* epsilon */
@@ -187,7 +191,7 @@ PMOP : ADD | SUB
 MultiplicativeExpr : Term TermLoop
 ;
 
-TermLoop : MultOP TERM TermLoop | /* epsilon */
+TermLoop : MultOP Term TermLoop | /* epsilon */
 ;
 
 MultOP : MULT | DIV | MOD
