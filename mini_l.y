@@ -82,7 +82,8 @@ int yylex(void);
 
 %%
 
-Program : Function Program | /* epsilon */
+Program : Function Program
+  | /* epsilon */
 ;
 
 Function : FUNCTION IDENTIFIER SEMICOLON
@@ -91,24 +92,24 @@ Function : FUNCTION IDENTIFIER SEMICOLON
   BEGINBODY Statement SEMICOLON StatementLoop ENDBODY
 ;
 
-DecLoop : Declaration SEMICOLON DecLoop | /* epsilon */
+DecLoop : DecLoop Declaration SEMICOLON
+  | /* epsilon */
 ;
 
-StatementLoop : Statement SEMICOLON StatementLoop_
+StatementLoop : StatementLoop Statement SEMICOLON
+  | Statement SEMICOLON
 ;
 
-StatementLoop_ : Statement SEMICOLON StatementLoop_ | /* epsilon */
+
+Declaration : IdentifierLoop COLON Declaration_ INTEGER
 ;
 
-
-
-Declaration : IDENTIFIER IdentifierLoop : Declaration_ INTEGER
+Declaration_ : ARRAY L_SQUARE_BRACKET NUMBER R_SQUARE_BRACKET OF
+  | /* epsilon */
 ;
 
-Declaration_ : ARRAY L_SQUARE_BRACKET NUMBER R_SQUARE_BRACKET OF | /* epsilon */
-;
-
-IdentifierLoop : COMMA IDENTIFIER IdentifierLoop | /* epsilon */
+IdentifierLoop : IdentifierLoop COMMA IDENTIFIER
+  | IDENTIFIER
 ;
 
 
@@ -124,7 +125,8 @@ Assignment : Var ASSIGN Expression
 IfStatement : IF BoolExpr THEN StatementLoop OptElse ENDIF
 ;
 
-OptElse : ELSE StatementLoop | /* epsilon */
+OptElse : ELSE StatementLoop
+  | /* epsilon */
 ;
 
 
@@ -136,92 +138,92 @@ DoWhile : DO BEGINLOOP StatementLoop ENDLOOP WHILE BoolExpr
 ;
 
 
-VarLoop : Var VarLoop_
+VarLoop : VarLoop COMMA Var
+  | Var
 ;
 
-VarLoop_ : COMMA Var VarLoop_ | /* epsilon */
-;
 
-
-
-BoolExpr : RelationAndExpr BoolExpr_
-;
-
-BoolExpr_ : OR RelationAndExpr BoolExpr_ | /* epsilon */
+BoolExpr : BoolExpr OR RelationAndExpr
+  | RelationAndExpr
 ;
 
 
 
-RelationAndExpr : RelationExpr RelationAndExpr_
+RelationAndExpr : RelationAndExpr AND RelationExpr
+  | RelationExpr
 ;
-
-RelationAndExpr_ : AND RelationExpr RelationAndExpr_ | /* epsilon */
-;
-
 
 
 RelationExpr : OptNot RelationExpr_
 ;
 
-RelationExpr_ : Expression Comp Expression | TRUE | FALSE
+RelationExpr_ : Expression Comp Expression
+  | TRUE
+  | FALSE
   | L_PAREN BoolExpr R_PAREN
 ;
 
 
-OptNot : NOT | /* epsilon */
+OptNot : NOT
+  | /* epsilon */
 ;
 
 
 
-Comp : EQ | NEG | LT | GT | LTE | GTE
+Comp : EQ
+  | NEG
+  | LT
+  | GT
+  | LTE
+  | GTE
+;
+
+
+Expression : Expression AddSub MultiplicativeExpr
+  | MultiplicativeExpr
+;
+
+AddSub : ADD
+  | SUB
+;
+
+
+MultiplicativeExpr : MultiplicativeExpr MultOP Term
+  | Term
+;
+
+
+MultOP : MULT
+  | DIV
+  | MOD
+;
+
+
+Term : OptMinus Term_
+  | IDENTIFIER L_PAREN Term__ R_PAREN
+;
+
+Term_ : Var
+  | NUMBER
+  | L_PAREN Expression R_PAREN
+;
+
+Term__ : ExpressionLoop
+  | /* epsilon */
+;
+
+OptMinus : SUB
+  | /* epsilon */
+;
+
+ExpressionLoop : ExpressionLoop COMMA Expression
+  | Expression
 ;
 
 
 
-Expression : MultiplicativeExpr Expression_
-;
-
-Expression_ : PMOP MultiplicativeExpr Expression_ | /* epsilon */
-;
-
-PMOP : ADD | SUB
-;
-
-
-MultiplicativeExpr : Term TermLoop
-;
-
-TermLoop : MultOP Term TermLoop | /* epsilon */
-;
-
-MultOP : MULT | DIV | MOD
-;
-
-
-
-Term : OptMinus Term_ | IDENTIFIER L_PAREN Term__ R_PAREN
-;
-
-Term_ : Var | NUMBER | L_PAREN Expression R_PAREN
-;
-
-Term__ : ExpressionLoop | /* epsilon */
-
-OptMinus : SUB | /* epsilon */
-;
-
-ExpressionLoop : Expression ExpressionLoop_ | /* epsilon */
-;
-
-ExpressionLoop_ : COMMA Expression ExpressionLoop | /* epsilon */
-;
-
-
-
-Var : IDENTIFIER Var_
-;
-
-Var_ : L_SQUARE_BRACKET Expression R_SQUARE_BRACKET | /* epsilon */
+Var : IDENTIFIER L_SQUARE_BRACKET Expression R_SQUARE_BRACKET
+| IDENTIFIER
 ;
 
 %%
