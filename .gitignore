@@ -1,3 +1,5 @@
 *.swp
 lex.yy.c
 lexer
+mini_l.output
+mini_l.tab.*
