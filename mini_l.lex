@@ -28,8 +28,9 @@
 /* include headers here to include */
 /*#include "y.tab.h"*/
 %{
-  #include "heading.h"
-  #include "tok.h"
+  //#include "heading.h"
+  //#include "tok.h"
+  #include "mini_l.tab.h"
 
   int currentLine = 1, currentPos = 1;
 
@@ -57,12 +58,12 @@ IDCHAR    {ALPHANUM}|_
 [[:space:]]+  {currentPos += yyleng;}
 
 "function"    {currentPos += yyleng; return FUNCTION;}
-"beginparams" {currentPos += yyleng; return BEGIN_PARAMS;}
-"endparams"   {currentPos += yyleng; return END_PARAMS;}
-"beginlocals" {currentPos += yyleng; return BEGIN_LOCALS;}
-"endlocals"   {currentPos += yyleng; return END_LOCALS;}
-"beginbody"   {currentPos += yyleng; return BEGIN_BODY;}
-"endbody"     {currentPos += yyleng; return END_BODY;}
+"beginparams" {currentPos += yyleng; return BEGINPARAMS;}
+"endparams"   {currentPos += yyleng; return ENDPARAMS;}
+"beginlocals" {currentPos += yyleng; return BEGINLOCALS;}
+"endlocals"   {currentPos += yyleng; return ENDLOCALS;}
+"beginbody"   {currentPos += yyleng; return BEGINBODY;}
+"endbody"     {currentPos += yyleng; return ENDBODY;}
 "integer"     {currentPos += yyleng; return INTEGER;}
 "array"       {currentPos += yyleng; return ARRAY;}
 "of"          {currentPos += yyleng; return OF;}
@@ -130,14 +131,14 @@ _{IDCHAR}* {
 
   /* identifier matcher */
 {ALPHA}(_*{ALPHANUM})*  {
-  yylval.string = strdup(yytext);
+  //yylval.string = strdup(yytext);
   currentPos += yyleng;
   return IDENTIFIER;
 }
 
   /* number matcher */
 {DIGIT}+ {
-  yylval.value = atoi(yytext);
+  //yylval.value = atoi(yytext);
   currentPos += yyleng;
   return NUMBER;
 }

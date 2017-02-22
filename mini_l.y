@@ -47,7 +47,7 @@ int yylex(void);
 %token RETURN
 
 %token EQ
-%left NEG
+%left NEQ
 %left LTE
 %left GTE
 %left LT
@@ -171,7 +171,7 @@ OptNot : NOT
 
 
 Comp : EQ
-  | NEG
+  | NEQ
   | LT
   | GT
   | LTE
