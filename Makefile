@@ -1,4 +1,5 @@
-all: bison lexer
+all: bison flex
+	gcc -o parser mini_l.tab.c lex.yy.c -lfl
 
 run: all
 	./test.sh
