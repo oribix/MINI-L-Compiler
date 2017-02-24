@@ -89,7 +89,7 @@ IDCHAR    {ALPHANUM}|_
   /*Comparison Operators */
 "=="  {currentPos += yyleng; return EQ;}
 "<>"  {currentPos += yyleng; return NEQ;}
-"<="  {currentPos += yyleng; return LTE;}
+"<="  {currentPos += yyleng; printf("<=\n"); return LTE;}
 ">="  {currentPos += yyleng; return GTE;}
 "<"   {currentPos += yyleng; return LT;}
 ">"   {currentPos += yyleng; return GT;}
@@ -98,8 +98,8 @@ IDCHAR    {ALPHANUM}|_
 ","   {currentPos += yyleng; return COMMA;}
 "("   {currentPos += yyleng; return L_PAREN;}
 ")"   {currentPos += yyleng; return R_PAREN;}
-"["   {currentPos += yyleng; return L_SQUARE_BRACKET;}
-"]"   {currentPos += yyleng; return R_SQUARE_BRACKET;}
+"["   {currentPos += yyleng;  printf("[\n"); return L_SQUARE_BRACKET;}
+"]"   {currentPos += yyleng; printf("]\n"); return R_SQUARE_BRACKET; }
 ":="  {currentPos += yyleng; return ASSIGN;}
 
   /*Arithmetic Operators*/

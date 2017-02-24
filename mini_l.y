@@ -97,15 +97,16 @@ Function : FUNCTION IDENTIFIER SEMICOLON
 DecLoop : DecLoop Declaration SEMICOLON
 {cout << "DecLoop -> DecLoop Declaration SEMICOLON" << endl;}
   | /* epsilon */
-{cout << "DecLoop -> /* epsilon */" << endl;}
+
+{cout << "DecLoop -> /* epsilon *//*" << endl;}
+
 ;
 
-StatementLoop : StatementLoop Statement SEMICOLON
+StatementLoop : Statement SEMICOLON StatementLoop//StatementLoop Statement SEMICOLON
 {cout << "StatementLoop -> StatementLoop Statement SEMICOLON" << endl;}
   | Statement SEMICOLON
 {cout << "StatementLoop -> Statement SEMICOLON" << endl;}
 ;
-
 
 Declaration : IdentifierLoop COLON Declaration_ INTEGER
 {cout << "Declaration -> IdentifierLoop COLON Declaration_ INTEGER" << endl;}
@@ -127,7 +128,7 @@ IdentifierLoop : IdentifierLoop COMMA IDENTIFIER
 
 Statement : Assignment 
 {cout << "Statement -> Assignment " << endl;}
-  | IfStatement 
+   |IfStatement 
 {cout << "Statement -> IfStatement" << endl;}
   | WhileLoop 
 {cout << "Statement -> WhileLoop " << endl;}
@@ -151,12 +152,14 @@ Assignment : Var ASSIGN Expression
 
 IfStatement : IF BoolExpr THEN StatementLoop OptElse ENDIF
 {cout << "IfStatement -> IF BoolExpr THEN StatementLoop OptElse ENDIF"  << endl;}
+
+
 ;
 
 OptElse : ELSE StatementLoop
 {cout << "OptElse -> ELSE StatementLoop"  << endl;}
   | /* epsilon */
-{cout << "OptElse -> /* epsilon */ "  << endl;}
+{cout << "OptElse -> /* epsilon *//* "  << endl;}
 ;
 
 
@@ -192,25 +195,28 @@ RelationAndExpr : RelationAndExpr AND RelationExpr
 ;
 
 
-RelationExpr : OptNot RelationExpr_
-{cout << "RelationExpr -> OptNot RelationExpr_" << endl;}
+RelationExpr : Expression Comp Expression
+{cout << "RelationExpr -> Expression Comp Expression" << endl;}
+  | TRUE
+{cout << "RelationExpr -> TRUE" << endl;}
+  | FALSE
+{cout << "RelationExpr -> FALSE" << endl;}
+  | L_PAREN BoolExpr R_PAREN
+{cout << "RelationExpr -> L_PAREN BoolExpr R_PAREN" << endl;} 
+ | RelationExpr_
+{cout << "RelationExpr -> NOT RelationExpr_" << endl;}
 ;
 
-RelationExpr_ : Expression Comp Expression
-{cout << "RelationExpr_ -> Expression Comp Expression" << endl;}
-  | TRUE
-{cout << "RelationExpr_ -> TRUE" << endl;}
-  | FALSE
-{cout << "RelationExpr_ -> FALSE" << endl;}
-  | L_PAREN BoolExpr R_PAREN
-{cout << "RelationExpr_ -> L_PAREN BoolExpr R_PAREN" << endl;}
+RelationExpr_ : OptNot RelationExpr_
+{cout << "RelationExpr_ -> OptNot RelationExpr_" << endl;}
 ;
+
 
 
 OptNot : NOT
 {cout << "OptNot -> NOT" << endl;}
   | /* epsilon */
-{cout << "OptNot -> /* epsilon */" << endl;}
+{cout << "OptNot -> /* epsilon *//*" << endl;}
 ;
 
 
@@ -243,7 +249,6 @@ AddSub : ADD
 ;
 
 
-
 MultiplicativeExpr : MultiplicativeExpr MultOP Term
 {cout << "MultiplicativeExpr -> MultiplicativeExpr MultOP Term" << endl;}
   | Term
@@ -259,10 +264,11 @@ MultOP : MULT
 ;
 
 
-Term : OptMinus Term_
+Term : Term_
 {cout << "Term -> OptMinus Term_" << endl;}
   | IDENTIFIER L_PAREN Term__ R_PAREN
 {cout << "Term -> IDENTIFIER L_PAREN Term__ R_PAREN" << endl;}
+| SUB Term
 ;
 
 Term_ : Var
@@ -276,13 +282,7 @@ Term_ : Var
 Term__ : ExpressionLoop
 {cout << "Term__ -> ExpressionLoop " << endl;}
   | /* epsilon */
-{cout << "Term__ ->  /* epsilon */" << endl;}
-;
-
-OptMinus : SUB
-{cout << "OptMinus -> SUB" << endl;}
-  | /* epsilon */
-{cout << "OptMinus -> /* epsilon */" << endl;}
+{cout << "Term__ ->  /* epsilon *//*" << endl;}
 ;
 
 ExpressionLoop : ExpressionLoop COMMA Expression
@@ -294,7 +294,7 @@ ExpressionLoop : ExpressionLoop COMMA Expression
 
 
 Var : IDENTIFIER L_SQUARE_BRACKET Expression R_SQUARE_BRACKET
-{cout << "Var -> IDENTIFIER L_SQUARE_BRACKET Expression R_SQUARE_BRACKET" << endl;}
+{cout << "Var -> IDENTIFIER L_SQUARE_BRACKET EXPRESSION R_SQUARE_BRACKET" << endl;}//EXPRESSION INBTW
 | IDENTIFIER
 {cout << "Var -> IDENTIFIER" << endl;}
 ;
