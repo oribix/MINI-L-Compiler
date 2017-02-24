@@ -235,9 +235,8 @@ int yyerror(string s)
   extern int currentLine;  // defined and maintained in lex.c
   extern char *yytext;  // defined and maintained in lex.c
   
-  cerr << "ERROR: " << s << "at symbol" << yytext << " on line" << currentLine << endl;
+  cerr << "ERROR: " << s << " at symbol " << yytext << " on line " << currentLine << endl;
  
-//  fprintf(stderr, "ERROR: %s at symbol \"%s\" on line %d", s, yytext, currentLine);
   exit(1);
 }
 
