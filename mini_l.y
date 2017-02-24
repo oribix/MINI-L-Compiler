@@ -230,12 +230,14 @@ Var : IDENTIFIER L_SQUARE_BRACKET Expression R_SQUARE_BRACKET
 
 //epilogue - declation of function declared in prologue
 
-int yyerror(char* s)
+int yyerror(string s)
 {
-  extern int yylineno;  // defined and maintained in lex.c
+  extern int currentLine;  // defined and maintained in lex.c
   extern char *yytext;  // defined and maintained in lex.c
   
-  fprintf(stderr, "ERROR: %s at symbol \"%s\" on line %d", s, yytext, yylineno);
+  cerr << "ERROR: " << s << "at symbol" << yytext << " on line" << currentLine << endl;
+ 
+//  fprintf(stderr, "ERROR: %s at symbol \"%s\" on line %d", s, yytext, currentLine);
   exit(1);
 }
 

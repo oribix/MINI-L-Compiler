@@ -143,21 +143,38 @@ _{IDCHAR}* {
   return NUMBER;
 }
 
+
 . {
   printErr();
   printf("unrecognized symbol \"%s\"\n", yytext);
   exit(0);
 }
 %%
+/* main.cc 
 
+#include "heading.h"
 
-/*User Code */
+// prototype of bison-generated parser function
+int yyparse();
+
 int main(int argc, char **argv)
 {
-  /* argv - pointer to the row in the vector, argc is the count */
-  /* ++argv move the pointer to the next item in the vector */
-  /* --argv decrement the number of items in the count    */
-  /* skip over program name */
+  if ((argc > 1) && (freopen(argv[1], "r", stdin) == NULL))
+  {
+    cerr << argv[0] << ": File " << argv[1] << " cannot be opened.\n";
+    exit( 1 );
+  }
+  
+  yyparse();
+
+  return 0;
+}*/
+
+
+
+/*User Code 
+int main(int argc, char **argv)
+{
   ++argv, --argc;
   if (argc > 0 )
     yyin = fopen(argv[0], "r");
@@ -166,4 +183,4 @@ int main(int argc, char **argv)
 
   yylex();
   fclose(yyin);
-}
+}*/
