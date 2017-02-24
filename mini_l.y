@@ -10,6 +10,8 @@ int yyerror(char *s);
 int yylex(void);
 %}
 
+%error-verbose
+
 //Bison Declartions
 //1) names of termianls
 //2) names of non-terminals
@@ -100,11 +102,11 @@ DecLoop : DecLoop Declaration SEMICOLON
 {cout << "DecLoop -> DecLoop Declaration SEMICOLON" << endl;}
   | /* epsilon */
 
-{cout << "DecLoop -> /* epsilon *//*" << endl;}
+{cout << "DecLoop -> epsilon" << endl;}
 
 ;
 
-StatementLoop : Statement SEMICOLON StatementLoop//StatementLoop Statement SEMICOLON
+StatementLoop : Statement SEMICOLON StatementLoop
 {cout << "StatementLoop -> StatementLoop Statement SEMICOLON" << endl;}
   | Statement SEMICOLON
 {cout << "StatementLoop -> Statement SEMICOLON" << endl;}
@@ -161,7 +163,7 @@ IfStatement : IF BoolExpr THEN StatementLoop OptElse ENDIF
 OptElse : ELSE StatementLoop
 {cout << "OptElse -> ELSE StatementLoop"  << endl;}
   | /* epsilon */
-{cout << "OptElse -> /* epsilon *//* "  << endl;}
+{cout << "OptElse -> epsilon" << endl;}
 ;
 
 
@@ -197,30 +199,21 @@ RelationAndExpr : RelationAndExpr AND RelationExpr
 ;
 
 
-RelationExpr : Expression Comp Expression
-{cout << "RelationExpr -> Expression Comp Expression" << endl;}
-  | TRUE
-{cout << "RelationExpr -> TRUE" << endl;}
-  | FALSE
-{cout << "RelationExpr -> FALSE" << endl;}
-  | L_PAREN BoolExpr R_PAREN
-{cout << "RelationExpr -> L_PAREN BoolExpr R_PAREN" << endl;} 
- | RelationExpr_
+RelationExpr : RelationExpr_
+{cout << "RelationExpr -> RelationExpr_" << endl;}
+  | NOT RelationExpr_
 {cout << "RelationExpr -> NOT RelationExpr_" << endl;}
 ;
 
-RelationExpr_ : OptNot RelationExpr_
-{cout << "RelationExpr_ -> OptNot RelationExpr_" << endl;}
+RelationExpr_ : Expression Comp Expression
+{cout << "RelationExpr_ -> Expression Comp Expression" << endl;}
+  | TRUE
+{cout << "RelationExpr_ -> TRUE" << endl;}
+  | FALSE
+{cout << "RelationExpr_ -> FALSE" << endl;}
+  | L_PAREN BoolExpr R_PAREN
+{cout << "RelationExpr_ -> L_PAREN BoolExpr R_PAREN" << endl;} 
 ;
-
-
-
-OptNot : NOT
-{cout << "OptNot -> NOT" << endl;}
-  | /* epsilon */
-{cout << "OptNot -> /* epsilon *//*" << endl;}
-;
-
 
 
 Comp : EQ
@@ -267,10 +260,11 @@ MultOP : MULT
 
 
 Term : Term_
-{cout << "Term -> OptMinus Term_" << endl;}
+{cout << "Term -> Term_" << endl;}
+  | SUB Term_
+{cout << "Term -> SUB Term_" << endl;}
   | IDENTIFIER L_PAREN Term__ R_PAREN
 {cout << "Term -> IDENTIFIER L_PAREN Term__ R_PAREN" << endl;}
-| SUB Term
 ;
 
 Term_ : Var
@@ -284,7 +278,7 @@ Term_ : Var
 Term__ : ExpressionLoop
 {cout << "Term__ -> ExpressionLoop " << endl;}
   | /* epsilon */
-{cout << "Term__ ->  /* epsilon *//*" << endl;}
+{cout << "Term__ ->  epsilon" << endl;}
 ;
 
 ExpressionLoop : ExpressionLoop COMMA Expression
@@ -296,7 +290,7 @@ ExpressionLoop : ExpressionLoop COMMA Expression
 
 
 Var : IDENTIFIER L_SQUARE_BRACKET Expression R_SQUARE_BRACKET
-{cout << "Var -> IDENTIFIER L_SQUARE_BRACKET EXPRESSION R_SQUARE_BRACKET" << endl;}//EXPRESSION INBTW
+{cout << "Var -> IDENTIFIER L_SQUARE_BRACKET EXPRESSION R_SQUARE_BRACKET" << endl;}
 | IDENTIFIER
 {cout << "Var -> IDENTIFIER" << endl;}
 ;
@@ -307,10 +301,11 @@ Var : IDENTIFIER L_SQUARE_BRACKET Expression R_SQUARE_BRACKET
 
 int yyerror(string s)
 {
-  extern int currentLine;  // defined and maintained in lex.c
-  extern char *yytext;  // defined and maintained in lex.c
+  extern int currentLine; // defined and maintained in lex.c
+  extern int currentPos;  // defined and maintained in lex.c
 
-  cerr << "ERROR: " << s << " at symbol " << yytext << " on line " << currentLine << endl;
+  cerr << "ERROR: " << s << " on line " << currentLine
+    << " at position " << currentPos << endl;
 
   exit(1);
 }
