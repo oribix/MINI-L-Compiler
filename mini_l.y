@@ -1,7 +1,7 @@
 
 
 
-//Prologue (types and variables in in actions - header files, 
+//Prologue (types and variables in in actions - header files,
 //declare yylex, yyerror, any other global indentification used by actions
 
 %{
@@ -83,11 +83,13 @@ int yylex(void);
 %%
 
 Program : Function Program
+{cout << "Program -> Function Program" << endl;}
   | /* epsilon */
+{cout << "Program -> epsilon" << endl;}
 ;
 
 Function : FUNCTION IDENTIFIER SEMICOLON
-  BEGINPARAMS DecLoop ENDPARAMS		
+  BEGINPARAMS DecLoop ENDPARAMS
   BEGINLOCALS DecLoop ENDLOCALS
   BEGINBODY Statement SEMICOLON StatementLoop ENDBODY
 
@@ -125,19 +127,19 @@ IdentifierLoop : IdentifierLoop COMMA IDENTIFIER
 
 
 
-Statement : Assignment 
+Statement : Assignment
 {cout << "Statement -> Assignment " << endl;}
-  | IfStatement 
+  | IfStatement
 {cout << "Statement -> IfStatement" << endl;}
-  | WhileLoop 
+  | WhileLoop
 {cout << "Statement -> WhileLoop " << endl;}
-  | DoWhile 
+  | DoWhile
 {cout << "Statement -> DoWhile " << endl;}
-  | READ VarLoop 
+  | READ VarLoop
 {cout << "Statement -> READ VarLoop " << endl;}
-  | WRITE VarLoop 
+  | WRITE VarLoop
 {cout << "Statement -> WRITE VarLoop " << endl;}
-  | CONTINUE 
+  | CONTINUE
 {cout << "Statement -> CONTINUE " << endl;}
   | RETURN Expression
 {cout << "Statement -> RETURN Expression" << endl;}
@@ -307,9 +309,9 @@ int yyerror(string s)
 {
   extern int currentLine;  // defined and maintained in lex.c
   extern char *yytext;  // defined and maintained in lex.c
-  
+
   cerr << "ERROR: " << s << " at symbol " << yytext << " on line " << currentLine << endl;
- 
+
   exit(1);
 }
 
