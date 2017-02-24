@@ -87,143 +87,216 @@ Program : Function Program
 ;
 
 Function : FUNCTION IDENTIFIER SEMICOLON
-  BEGINPARAMS DecLoop ENDPARAMS
+  BEGINPARAMS DecLoop ENDPARAMS		
   BEGINLOCALS DecLoop ENDLOCALS
   BEGINBODY Statement SEMICOLON StatementLoop ENDBODY
+
+{cout << "FUNCTION -> FUNCTION IDENTIFIER SEMICOLON BEGIN PARAMS DecLoop END PARAMS BEGINLOCALS DecLoop END LOCALS BEGINBODY Statement SEMICOLON StatementLoop ENDBODY" << endl;}
 ;
 
 DecLoop : DecLoop Declaration SEMICOLON
+{cout << "DecLoop -> DecLoop Declaration SEMICOLON" << endl;}
   | /* epsilon */
+{cout << "DecLoop -> /* epsilon */" << endl;}
 ;
 
 StatementLoop : StatementLoop Statement SEMICOLON
+{cout << "StatementLoop -> StatementLoop Statement SEMICOLON" << endl;}
   | Statement SEMICOLON
+{cout << "StatementLoop -> Statement SEMICOLON" << endl;}
 ;
 
 
 Declaration : IdentifierLoop COLON Declaration_ INTEGER
+{cout << "Declaration -> IdentifierLoop COLON Declaration_ INTEGER" << endl;}
 ;
 
 Declaration_ : ARRAY L_SQUARE_BRACKET NUMBER R_SQUARE_BRACKET OF
+{cout << "Declaration_ > /ARRAY L_SQUARE_BRACKET NUMBER R_SQUARE_BRACKET OF" << endl;}
   | /* epsilon */
+{cout << "Declaration_ > /* epsilon */" << endl;}
 ;
 
 IdentifierLoop : IdentifierLoop COMMA IDENTIFIER
+{cout << "IdentifierLoop -> IdentifierLoop COMMA IDENTIFIER" << endl;}
   | IDENTIFIER
+{cout << "IdentifierLoop -> IDENTIFIER" << endl;}
 ;
 
 
 
-Statement : Assignment | IfStatement | WhileLoop | DoWhile | READ VarLoop |
-  WRITE VarLoop | CONTINUE | RETURN Expression
+Statement : Assignment 
+{cout << "Statement -> Assignment " << endl;}
+  | IfStatement 
+{cout << "Statement -> IfStatement" << endl;}
+  | WhileLoop 
+{cout << "Statement -> WhileLoop " << endl;}
+  | DoWhile 
+{cout << "Statement -> DoWhile " << endl;}
+  | READ VarLoop 
+{cout << "Statement -> READ VarLoop " << endl;}
+  | WRITE VarLoop 
+{cout << "Statement -> WRITE VarLoop " << endl;}
+  | CONTINUE 
+{cout << "Statement -> CONTINUE " << endl;}
+  | RETURN Expression
+{cout << "Statement -> RETURN Expression" << endl;}
 ;
 
 
 Assignment : Var ASSIGN Expression
+{cout << "Assignment -> Var ASSIGN Expression" << endl;}
+;
 
 
 IfStatement : IF BoolExpr THEN StatementLoop OptElse ENDIF
+{cout << "IfStatement -> IF BoolExpr THEN StatementLoop OptElse ENDIF"  << endl;}
 ;
 
 OptElse : ELSE StatementLoop
+{cout << "OptElse -> ELSE StatementLoop"  << endl;}
   | /* epsilon */
+{cout << "OptElse -> /* epsilon */ "  << endl;}
 ;
 
 
 WhileLoop : WHILE BoolExpr BEGINLOOP StatementLoop ENDLOOP
+{cout << "WhileLoop -> WHILE BoolExpr BEGINLOOP StatementLoop ENDLOOP" << endl;}
 ;
 
 
 DoWhile : DO BEGINLOOP StatementLoop ENDLOOP WHILE BoolExpr
+{cout << "DoWhile -> DO BEGINLOOP StatementLoop ENDLOOP WHILE BoolExpr" << endl;}
 ;
 
 
 VarLoop : VarLoop COMMA Var
+{cout << "VarLoop -> VarLoop COMMA Var" << endl;}
   | Var
+{cout << "VarLoop -> Var" << endl;}
 ;
 
 
 BoolExpr : BoolExpr OR RelationAndExpr
+{cout << "BoolExpr -> BoolExpr OR RelationAndExpr" << endl;}
   | RelationAndExpr
+{cout << "BoolExpr -> RelationAndExpr" << endl;}
 ;
 
 
 
 RelationAndExpr : RelationAndExpr AND RelationExpr
+{cout << "RelationAndExpr -> RelationAndExpr AND RelationExpr" << endl;}
   | RelationExpr
+{cout << "RelationAndExpr -> RelationExpr" << endl;}
 ;
 
 
 RelationExpr : OptNot RelationExpr_
+{cout << "RelationExpr -> OptNot RelationExpr_" << endl;}
 ;
 
 RelationExpr_ : Expression Comp Expression
+{cout << "RelationExpr_ -> Expression Comp Expression" << endl;}
   | TRUE
+{cout << "RelationExpr_ -> TRUE" << endl;}
   | FALSE
+{cout << "RelationExpr_ -> FALSE" << endl;}
   | L_PAREN BoolExpr R_PAREN
+{cout << "RelationExpr_ -> L_PAREN BoolExpr R_PAREN" << endl;}
 ;
 
 
 OptNot : NOT
+{cout << "OptNot -> NOT" << endl;}
   | /* epsilon */
+{cout << "OptNot -> /* epsilon */" << endl;}
 ;
 
 
 
 Comp : EQ
+{cout << "Comp -> EQ" << endl;}
   | NEQ
+{cout << "Comp -> NEQ" << endl;}
   | LT
+{cout << "Comp -> LT" << endl;}
   | GT
+{cout << "Comp -> GT" << endl;}
   | LTE
+{cout << "Comp -> LTE" << endl;}
   | GTE
+{cout << "Comp -> GTE" << endl;}
 ;
 
 
 Expression : Expression AddSub MultiplicativeExpr
+{cout << "Expression -> Expression AddSub MultiplicativeExpr" << endl;}
   | MultiplicativeExpr
+{cout << "Expression -> MultiplicativeExpr" << endl;}
 ;
 
 AddSub : ADD
+{cout << "AddSub -> ADD" << endl;}
   | SUB
+{cout << "AddSub -> SUB" << endl;}
 ;
+
 
 
 MultiplicativeExpr : MultiplicativeExpr MultOP Term
+{cout << "MultiplicativeExpr -> MultiplicativeExpr MultOP Term" << endl;}
   | Term
+{cout << "MultiplicativeExpr -> Term" << endl;}
 ;
 
-
 MultOP : MULT
+{cout << "MultOP -> MULT" << endl;}
   | DIV
+{cout << "MultOP ->  DIV" << endl;}
   | MOD
+{cout << "MultOP ->  MOD" << endl;}
 ;
 
 
 Term : OptMinus Term_
+{cout << "Term -> OptMinus Term_" << endl;}
   | IDENTIFIER L_PAREN Term__ R_PAREN
+{cout << "Term -> IDENTIFIER L_PAREN Term__ R_PAREN" << endl;}
 ;
 
 Term_ : Var
+{cout << "Term_ ->  Var" << endl;}
   | NUMBER
+{cout << "Term_ ->  NUMBER" << endl;}
   | L_PAREN Expression R_PAREN
+{cout << "Term_ -> L_PAREN Expression R_PAREN" << endl;}
 ;
 
 Term__ : ExpressionLoop
+{cout << "Term__ -> ExpressionLoop " << endl;}
   | /* epsilon */
+{cout << "Term__ ->  /* epsilon */" << endl;}
 ;
 
 OptMinus : SUB
+{cout << "OptMinus -> SUB" << endl;}
   | /* epsilon */
+{cout << "OptMinus -> /* epsilon */" << endl;}
 ;
 
 ExpressionLoop : ExpressionLoop COMMA Expression
+{cout << "ExpressionLoop -> ExpressionLoop COMMA Expression" << endl;}
   | Expression
+{cout << "ExpressionLoop ->  Expression" << endl;}
 ;
 
 
 
 Var : IDENTIFIER L_SQUARE_BRACKET Expression R_SQUARE_BRACKET
+{cout << "Var -> IDENTIFIER L_SQUARE_BRACKET Expression R_SQUARE_BRACKET" << endl;}
 | IDENTIFIER
+{cout << "Var -> IDENTIFIER" << endl;}
 ;
 
 %%
