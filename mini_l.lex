@@ -31,6 +31,7 @@
   //#include "heading.h"
   //#include "tok.h"
   #include "mini_l.tab.h"
+  #include "string.h"
 
   int currentLine = 1, currentPos = 1;
 
@@ -131,14 +132,14 @@ _{IDCHAR}* {
 
   /* identifier matcher */
 {ALPHA}(_*{ALPHANUM})*  {
-  //yylval.string = strdup(yytext);
+  yylval.string = strdup(yytext);
   currentPos += yyleng;
   return IDENTIFIER;
 }
 
   /* number matcher */
 {DIGIT}+ {
-  //yylval.value = atoi(yytext);
+  yylval.value = atoi(yytext);
   currentPos += yyleng;
   return NUMBER;
 }
@@ -150,37 +151,4 @@ _{IDCHAR}* {
   exit(0);
 }
 %%
-/* main.cc 
 
-#include "heading.h"
-
-// prototype of bison-generated parser function
-int yyparse();
-
-int main(int argc, char **argv)
-{
-  if ((argc > 1) && (freopen(argv[1], "r", stdin) == NULL))
-  {
-    cerr << argv[0] << ": File " << argv[1] << " cannot be opened.\n";
-    exit( 1 );
-  }
-  
-  yyparse();
-
-  return 0;
-}*/
-
-
-
-/*User Code 
-int main(int argc, char **argv)
-{
-  ++argv, --argc;
-  if (argc > 0 )
-    yyin = fopen(argv[0], "r");
-  else
-    yyin =stdin;
-
-  yylex();
-  fclose(yyin);
-}*/
