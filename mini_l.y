@@ -20,6 +20,11 @@ int yylex(void);
 //3) describe operation procedures
 //4) data type of sematic values of vairous symboles
 
+%union{
+  int value;
+  char * string;
+}
+
 %start Program
 
 %token FUNCTION
@@ -43,14 +48,14 @@ int yylex(void);
 %token CONTINUE
 %token READ
 %token WRITE
-%left AND
-%left OR
+%left  AND
+%left  OR
 %right NOT
 %token TRUE
 %token FALSE
 %token RETURN
 
-%token EQ
+%left EQ
 %left NEQ
 %left LTE
 %left GTE
@@ -68,18 +73,14 @@ int yylex(void);
 
 %right SUB
 
-%left ADD
 %left MULT
 %left DIV
 %left MOD
 
-%token NUMBER
-%token IDENTIFIER
+%left ADD
 
-%union{
-  int value;
-  char * string;
-}
+%token <value>  NUMBER
+%token <string> IDENTIFIER
 
 
 //grammer rules - how to construct each nonterminal symbol from its parts
@@ -104,7 +105,10 @@ Function :
 
 FunctionDec:
   FUNCTION IDENTIFIER Semicolon
-    {cout << "FunctionDec -> FUNCTION IDENTIFIER Semicolon" << endl;}
+    {
+      cout << "FunctionDec -> FUNCTION IDENTIFIER " << $2
+      << " Semicolon" << endl;
+    }
 ;
 
 Params :
@@ -134,28 +138,33 @@ StatementLoop :
     {cout << "StatementLoop -> StatementLoop Statement Semicolon" << endl;}
 | Statement Semicolon
     {cout << "StatementLoop -> Statement Semicolon" << endl;}
+| error {yyerrok;}
 ;
 
 Declaration :
   IdentifierLoop COLON Declaration_ INTEGER
     {cout << "Declaration -> IdentifierLoop COLON Declaration_ INTEGER" << endl;}
+| error {yyerrok;}
 ;
 
 Declaration_ :
   ARRAY L_SQUARE_BRACKET NUMBER R_SQUARE_BRACKET OF
     {
-      cout << "Declaration_ > /ARRAY L_SQUARE_BRACKET NUMBER "
-      << yylval.value << " R_SQUARE_BRACKET OF" << endl;
+      cout << "Declaration_ -> ARRAY L_SQUARE_BRACKET NUMBER "
+      << $3 << " R_SQUARE_BRACKET OF" << endl;
     }
 | /* epsilon */
-    {cout << "Declaration_ > epsilon" << endl;}
+    {cout << "Declaration_ -> epsilon" << endl;}
 ;
 
 IdentifierLoop :
   IdentifierLoop COMMA IDENTIFIER
-    {cout << "IdentifierLoop -> IdentifierLoop COMMA IDENTIFIER" << endl;}
+    {
+      cout << "IdentifierLoop -> IdentifierLoop COMMA IDENTIFIER "
+      << $3 << endl;
+    }
 | IDENTIFIER
-    {cout << "IdentifierLoop -> IDENTIFIER" << endl;}
+    {cout << "IdentifierLoop -> IDENTIFIER " << $1 << endl;}
 ;
 
 Statement :
@@ -287,9 +296,9 @@ MultOP :
   MULT
     {cout << "MultOP -> MULT" << endl;}
 | DIV
-    {cout << "MultOP ->  DIV" << endl;}
+    {cout << "MultOP -> DIV" << endl;}
 | MOD
-    {cout << "MultOP ->  MOD" << endl;}
+    {cout << "MultOP -> MOD" << endl;}
 ;
 
 
@@ -299,14 +308,17 @@ Term :
 | SUB Term_
     {cout << "Term -> SUB Term_" << endl;}
 | IDENTIFIER L_PAREN Term__ R_PAREN
-    {cout << "Term -> IDENTIFIER L_PAREN Term__ R_PAREN" << endl;}
+    {
+      cout << "Term -> IDENTIFIER " << $1
+      << " L_PAREN Term__ R_PAREN" << endl;
+    }
 ;
 
 Term_ :
   Var
-    {cout << "Term_ ->  Var" << endl;}
+    {cout << "Term_ -> Var" << endl;}
 | NUMBER
-    {cout << "Term_ ->  NUMBER " << yylval.value << endl;}
+    {cout << "Term_ -> NUMBER " << $1 << endl;}
 | L_PAREN Expression R_PAREN
     {cout << "Term_ -> L_PAREN Expression R_PAREN" << endl;}
 ;
@@ -315,21 +327,24 @@ Term__ :
   ExpressionLoop
     {cout << "Term__ -> ExpressionLoop " << endl;}
 | /* epsilon */
-    {cout << "Term__ ->  epsilon" << endl;}
+    {cout << "Term__ -> epsilon" << endl;}
 ;
 
 ExpressionLoop :
   ExpressionLoop COMMA Expression
     {cout << "ExpressionLoop -> ExpressionLoop COMMA Expression" << endl;}
 | Expression
-    {cout << "ExpressionLoop ->  Expression" << endl;}
+    {cout << "ExpressionLoop -> Expression" << endl;}
 ;
 
 Var :
   IDENTIFIER L_SQUARE_BRACKET Expression R_SQUARE_BRACKET
-    {cout << "Var -> IDENTIFIER L_SQUARE_BRACKET EXPRESSION R_SQUARE_BRACKET" << endl;}
+    {
+      cout << "Var -> IDENTIFIER " << $1
+      << " L_SQUARE_BRACKET EXPRESSION R_SQUARE_BRACKET" << endl;
+    }
 | IDENTIFIER
-    {cout << "Var -> IDENTIFIER" << endl;}
+    {cout << "Var -> IDENTIFIER " << $1 << endl;}
 ;
 
 Semicolon:
