@@ -7,6 +7,7 @@
 %{
 #include "heading.h"
 int yyerror(char *s);
+int yyerror(string s);
 int yylex(void);
 %}
 
@@ -83,19 +84,40 @@ int yylex(void);
 //grammer rules - how to construct each nontermiasnl symblo from its parts
 
 %%
-
-Program : Function Program
-{cout << "Program -> Function Program" << endl;}
-  | /* epsilon */
-{cout << "Program -> epsilon" << endl;}
+Program :
+  FunctionLoop
+    {cout << "Program -> FunctionLoop" << endl;}
 ;
 
-Function : FUNCTION IDENTIFIER SEMICOLON
-  BEGINPARAMS DecLoop ENDPARAMS
-  BEGINLOCALS DecLoop ENDLOCALS
-  BEGINBODY StatementLoop ENDBODY
+FunctionLoop : FunctionLoop Function
+{cout << "FunctionLoop -> Function FunctionLoop" << endl;}
+  | /* epsilon */
+{cout << "FunctionLoop -> epsilon" << endl;}
+;
 
-{cout << "FUNCTION -> FUNCTION IDENTIFIER SEMICOLON BEGIN PARAMS DecLoop END PARAMS BEGINLOCALS DecLoop END LOCALS BEGINBODY Statement SEMICOLON StatementLoop ENDBODY" << endl;}
+Function :
+  FunctionDec Params Locals Body
+    {cout << "FUNCTION -> FunctionDec Params Locals Body" << endl;}
+;
+
+FunctionDec:
+  FUNCTION IDENTIFIER SEMICOLON
+    {cout << "FunctionDec -> FUNCTION IDENTIFIER SEMICOLON" << endl;}
+;
+
+Params :
+  BEGINPARAMS DecLoop ENDPARAMS
+    {cout << "Params -> BEGINPARAMS DecLoop ENDPARAMS" << endl;}
+;
+
+Locals :
+  BEGINLOCALS DecLoop ENDLOCALS
+    {cout << "Locals -> BEGINLOCALS DecLoop ENDLOCALS" << endl;}
+;
+
+Body :
+  BEGINBODY StatementLoop ENDBODY
+    {cout << "Body -> BEGINBODY StatementLoop ENDBODY" << endl;}
 ;
 
 DecLoop : DecLoop Declaration SEMICOLON
