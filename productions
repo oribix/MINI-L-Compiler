@@ -1,172 +1,181 @@
 Program ->
-Function Program
-  | epsilon
-;
+  FunctionLoop
+
+
+FunctionLoop ->
+  FunctionLoop Function
+| epsilon
+
 
 Function ->
-FUNCTION IDENTIFIER SEMICOLON
+  FunctionDec Params Locals Body
+
+
+FunctionDec->
+  FUNCTION IDENTIFIER Semicolon
+
+
+Params ->
   BEGINPARAMS DecLoop ENDPARAMS
+
+
+Locals ->
   BEGINLOCALS DecLoop ENDLOCALS
-  BEGINBODY Statement SEMICOLON StatementLoop ENDBODY
-;
+
+
+Body ->
+  BEGINBODY StatementLoop ENDBODY
+
 
 DecLoop ->
-DecLoop Declaration SEMICOLON
-  | epsilon
-;
+  DecLoop Declaration Semicolon
+| epsilon
+
 
 StatementLoop ->
-StatementLoop Statement SEMICOLON
-  | Statement SEMICOLON
-;
-
+  StatementLoop Statement Semicolon
+| Statement Semicolon
 
 Declaration ->
-IdentifierLoop COLON Declaration_ INTEGER
-;
+  IdentifierLoop COLON Declaration_ INTEGER
 
 Declaration_ ->
-ARRAY L_SQUARE_BRACKET NUMBER R_SQUARE_BRACKET OF
-  | epsilon
-;
+  ARRAY L_SQUARE_BRACKET NUMBER R_SQUARE_BRACKET OF
+| epsilon
+
 
 IdentifierLoop ->
-IdentifierLoop COMMA IDENTIFIER
-  | IDENTIFIER
-;
-
+  IdentifierLoop COMMA IDENTIFIER
+| IDENTIFIER
 
 
 Statement ->
-Assignment | IfStatement | WhileLoop | DoWhile | READ VarLoop |
-  WRITE VarLoop | CONTINUE | RETURN Expression
-;
+  Assignment
+| IfStatement
+| WhileLoop
+| DoWhile
+| READ VarLoop
+| WRITE VarLoop
+| CONTINUE
+| RETURN Expression
 
 
 Assignment ->
-Var ASSIGN Expression
+  Var ASSIGN Expression
+
 
 
 IfStatement ->
-IF BoolExpr THEN StatementLoop OptElse ENDIF
-;
+  IF BoolExpr THEN StatementLoop OptElse ENDIF
+
 
 OptElse ->
-ELSE StatementLoop
-  | epsilon
-;
+  ELSE StatementLoop
+| epsilon
+
 
 
 WhileLoop ->
-WHILE BoolExpr BEGINLOOP StatementLoop ENDLOOP
-;
+  WHILE BoolExpr BEGINLOOP StatementLoop ENDLOOP
+
 
 
 DoWhile ->
-DO BEGINLOOP StatementLoop ENDLOOP WHILE BoolExpr
-;
+  DO BEGINLOOP StatementLoop ENDLOOP WHILE BoolExpr
+
 
 
 VarLoop ->
-VarLoop COMMA Var
-  | Var
-;
+  VarLoop COMMA Var
+| Var
+
 
 
 BoolExpr ->
-BoolExpr OR RelationAndExpr
-  | RelationAndExpr
-;
+  BoolExpr OR RelationAndExpr
+| RelationAndExpr
+
 
 
 
 RelationAndExpr ->
-RelationAndExpr AND RelationExpr
-  | RelationExpr
-;
+  RelationAndExpr AND RelationExpr
+| RelationExpr
+
 
 
 RelationExpr ->
-OptNot RelationExpr_
-;
+  RelationExpr_
+| NOT RelationExpr_
+
 
 RelationExpr_ ->
-Expression Comp Expression
-  | TRUE
-  | FALSE
-  | L_PAREN BoolExpr R_PAREN
-;
-
-
-OptNot ->
-NOT
-  | epsilon
-;
+  Expression Comp Expression
+| TRUE
+| FALSE
+| L_PAREN BoolExpr R_PAREN
 
 
 
 Comp ->
-EQ
-  | NEG
-  | LT
-  | GT
-  | LTE
-  | GTE
-;
+  EQ
+| NEQ
+| LT
+| GT
+| LTE
+| GTE
+
 
 
 Expression ->
-Expression AddSub MultiplicativeExpr
-  | MultiplicativeExpr
-;
+  Expression AddSub MultiplicativeExpr
+| MultiplicativeExpr
+
 
 AddSub ->
-ADD
-  | SUB
-;
+  ADD
+| SUB
+
 
 
 MultiplicativeExpr ->
-MultiplicativeExpr MultOP Term
-  | Term
-;
+  MultiplicativeExpr MultOP Term
+| Term
 
 
 MultOP ->
-MULT
-  | DIV
-  | MOD
-;
+  MULT
+| DIV
+| MOD
+
 
 
 Term ->
-OptMinus Term_
-  | IDENTIFIER L_PAREN Term__ R_PAREN
-;
+  Term_
+| SUB Term_
+| IDENTIFIER L_PAREN Term__ R_PAREN
+
 
 Term_ ->
-Var
-  | NUMBER
-  | L_PAREN Expression R_PAREN
-;
+  Var
+| NUMBER
+| L_PAREN Expression R_PAREN
+
 
 Term__ ->
-ExpressionLoop
-  | epsilon
-;
+  ExpressionLoop
+| epsilon
 
-OptMinus ->
-SUB
-  | epsilon
-;
 
 ExpressionLoop ->
-ExpressionLoop COMMA Expression
-  | Expression
-;
+  ExpressionLoop COMMA Expression
+| Expression
 
 
 Var ->
-IDENTIFIER L_SQUARE_BRACKET Expression R_SQUARE_BRACKET
+  IDENTIFIER L_SQUARE_BRACKET Expression R_SQUARE_BRACKET
 | IDENTIFIER
-;
+
+
+Semicolon->
+  SEMICOLON
