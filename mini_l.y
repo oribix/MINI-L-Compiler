@@ -93,7 +93,7 @@ Program : Function Program
 Function : FUNCTION IDENTIFIER SEMICOLON
   BEGINPARAMS DecLoop ENDPARAMS
   BEGINLOCALS DecLoop ENDLOCALS
-  BEGINBODY Statement SEMICOLON StatementLoop ENDBODY
+  BEGINBODY StatementLoop ENDBODY
 
 {cout << "FUNCTION -> FUNCTION IDENTIFIER SEMICOLON BEGIN PARAMS DecLoop END PARAMS BEGINLOCALS DecLoop END LOCALS BEGINBODY Statement SEMICOLON StatementLoop ENDBODY" << endl;}
 ;
@@ -101,12 +101,10 @@ Function : FUNCTION IDENTIFIER SEMICOLON
 DecLoop : DecLoop Declaration SEMICOLON
 {cout << "DecLoop -> DecLoop Declaration SEMICOLON" << endl;}
   | /* epsilon */
-
 {cout << "DecLoop -> epsilon" << endl;}
-
 ;
 
-StatementLoop : Statement SEMICOLON StatementLoop
+StatementLoop : StatementLoop Statement SEMICOLON
 {cout << "StatementLoop -> StatementLoop Statement SEMICOLON" << endl;}
   | Statement SEMICOLON
 {cout << "StatementLoop -> Statement SEMICOLON" << endl;}
@@ -156,8 +154,6 @@ Assignment : Var ASSIGN Expression
 
 IfStatement : IF BoolExpr THEN StatementLoop OptElse ENDIF
 {cout << "IfStatement -> IF BoolExpr THEN StatementLoop OptElse ENDIF"  << endl;}
-
-
 ;
 
 OptElse : ELSE StatementLoop
