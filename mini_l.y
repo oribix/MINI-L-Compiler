@@ -12,6 +12,7 @@ int yylex(void);
 %}
 
 %error-verbose
+%locations
 
 //Bison Declartions
 //1) names of termianls
@@ -81,7 +82,7 @@ int yylex(void);
 }
 
 
-//grammer rules - how to construct each nontermiasnl symblo from its parts
+//grammer rules - how to construct each nonterminal symbol from its parts
 
 %%
 Program :
@@ -101,7 +102,7 @@ Function :
 ;
 
 FunctionDec:
-  FUNCTION IDENTIFIER SEMICOLON
+  FUNCTION IDENTIFIER Semicolon
     {cout << "FunctionDec -> FUNCTION IDENTIFIER SEMICOLON" << endl;}
 ;
 
@@ -122,14 +123,19 @@ Body :
 
 DecLoop : DecLoop Declaration SEMICOLON
 {cout << "DecLoop -> DecLoop Declaration SEMICOLON" << endl;}
+  | DecLoop Declaration error
+{yyerrok;}
   | /* epsilon */
 {cout << "DecLoop -> epsilon" << endl;}
 ;
 
-StatementLoop : StatementLoop Statement SEMICOLON
-{cout << "StatementLoop -> StatementLoop Statement SEMICOLON" << endl;}
-  | Statement SEMICOLON
-{cout << "StatementLoop -> Statement SEMICOLON" << endl;}
+StatementLoop :
+  StatementLoop Statement SEMICOLON
+    {cout << "StatementLoop -> StatementLoop Statement SEMICOLON" << endl;}
+| Statement SEMICOLON
+    {cout << "StatementLoop -> Statement SEMICOLON" << endl;}
+| StatementLoop Statement error
+| Statement error
 ;
 
 Declaration : IdentifierLoop COLON Declaration_ INTEGER
@@ -305,13 +311,15 @@ ExpressionLoop : ExpressionLoop COMMA Expression
 {cout << "ExpressionLoop ->  Expression" << endl;}
 ;
 
-
-
 Var : IDENTIFIER L_SQUARE_BRACKET Expression R_SQUARE_BRACKET
 {cout << "Var -> IDENTIFIER L_SQUARE_BRACKET EXPRESSION R_SQUARE_BRACKET" << endl;}
 | IDENTIFIER
 {cout << "Var -> IDENTIFIER" << endl;}
 ;
+
+Semicolon:
+  SEMICOLON {cout << "Semicolon -> SEMICOLON" << endl;}
+| error     {yyerrok;}
 
 %%
 
@@ -319,13 +327,15 @@ Var : IDENTIFIER L_SQUARE_BRACKET Expression R_SQUARE_BRACKET
 
 int yyerror(string s)
 {
-  extern int currentLine; // defined and maintained in lex.c
-  extern int currentPos;  // defined and maintained in lex.c
+  extern char* yytext;
+  extern int yylineno;
 
-  cerr << "ERROR: " << s << " on line " << currentLine
-    << " at position " << currentPos << endl;
+  cerr << "ERROR: " << s 
+    << " at symbol \"" << yytext
+    << "\" on line " << yylineno
+    << endl << endl;
 
-  exit(1);
+  return 0;
 }
 
 int yyerror(char *s)

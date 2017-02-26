@@ -13,8 +13,6 @@ int main(int argc, char **argv)
     exit( 1 );
   }
   
-  yyparse();
-
-  return 0;
+  return yyparse();
 }
 
