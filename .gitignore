@@ -3,3 +3,8 @@ lex.yy.c
 lexer
 mini_l.output
 mini_l.tab.*
+bison.*
+lex.*
+main.o
+mini_l
+tok.h
