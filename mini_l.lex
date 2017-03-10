@@ -4,8 +4,7 @@
   #include "heading.h"
   #include "tok.h"
   #include "mini_l.tab.h"
-  #include "string.h"
-
+  
   int currentLine = 1, currentPos = 1;
 
   void printErr(){

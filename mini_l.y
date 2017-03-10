@@ -23,6 +23,20 @@ int yylex(void);
 %union{
   int value;
   char * string;
+
+  struct expression_t{
+    char* code;
+    struct location_t{
+      int lineNo;
+      char* symbol;
+    } place;
+  }expression;
+
+  struct statement_t{
+    char* code;
+    char* begin;
+    char* after;
+  }statement;
 }
 
 %start Program
@@ -295,5 +309,6 @@ int yyerror(char *s)
 {
   return yyerror(string(s));
 }
+
 
 
