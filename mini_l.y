@@ -85,17 +85,18 @@ int yylex(void);
 
 %right ASSIGN
 
-%right SUB
 
-%left MULT
-%left DIV
-%left MOD
+%left <string>  MULT
+%left <string>  DIV
+%left <string>  MOD
 
-%left ADD
+%left  <string> ADD
+%right <string> SUB
 
 %token <value>  NUMBER
 %token <string> IDENTIFIER
-
+%type <statement> Statement;
+%type <expression> Expression;
 
 //grammer rules - how to construct each nonterminal symbol from its parts
 
@@ -223,37 +224,57 @@ RelationExpr_ :
 | L_PAREN BoolExpr R_PAREN
 ;
 
-
 Comp :
-  EQ
-| NEQ
-| LT
-| GT
-| LTE
-| GTE
+  EQ {$$ =  "=="}
+| NEQ {$$ = "<>"}
+| LT {$$ = "<"}
+| GT {$$ = ">"}
+| LTE {$$ = ">="}
+| GTE {$$ = "<="}
 ;
 
 
 Expression :
   Expression AddSub MultiplicativeExpr
-| MultiplicativeExpr
+  {
+    if($2 == "-")
+      $$ = $1 - $3;
+    else
+      $$ = $1 + $3;
+  }
+| MultiplicativeExpr {$$ = $1;}
 ;
 
 AddSub :
-  ADD
-| SUB
+  ADD {$$ = "+"}
+| SUB {$$ = "-"}
 ;
 
 
 MultiplicativeExpr :
   MultiplicativeExpr MultOP Term
-| Term
+  {
+    switch($2[0]){
+      case '*': 
+      $$ = $1 * $3;
+      break;
+
+      case '/':
+      $$ = $1 / $3;
+      break;
+
+      case '%':
+      $$ = $1 % $3;
+      break;
+    }
+  }
+| Term {$$ = $1;}
 ;
 
 MultOP :
-  MULT
-| DIV
-| MOD
+  MULT {$$ = "*"}
+| DIV  {$$ = "/"}
+| MOD  {$$ = "%"}
 ;
 
 
