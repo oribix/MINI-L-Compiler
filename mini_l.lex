@@ -104,7 +104,7 @@ _{IDCHAR}* {
 
   /* identifier matcher */
 {ALPHA}(_*{ALPHANUM})*  {
-  yylval.string = strdup(yytext);
+  yylval.id = strdup(yytext);
   currentPos += yyleng;
   return IDENTIFIER;
 }

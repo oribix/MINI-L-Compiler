@@ -1,6 +1,3 @@
-
-
-
 //Prologue (types and variables in in actions - header files,
 //declare yylex, yyerror, any other global indentification used by actions
 
@@ -9,6 +6,23 @@
 int yyerror(char *s);
 int yyerror(string s);
 int yylex(void);
+
+string newlabel(){
+  static string temp;
+  static char c;
+  if(c < 'A' || c > 'Z'){
+    c = 'A';
+    temp.push_back(c);
+  }
+  else{
+    temp[temp.length()-1] = c;
+  }
+  c++;
+  return temp;
+}
+
+enum {OPADD, OPSUB, OPMULT, OPDIV, OPMOD};
+enum {COMPEQ, COMPLT, COMPGT, COMPLTE, COMPGTE, COMPNEQ};
 %}
 
 %error-verbose
@@ -22,14 +36,11 @@ int yylex(void);
 
 %union{
   int value;
-  char * string;
+  char * id;
 
   struct expression_t{
-    char* code;
-    struct location_t{
-      int lineNo;
-      char* symbol;
-    } place;
+    string * code;
+    int * place;
   }expression;
 
   struct statement_t{
@@ -86,16 +97,22 @@ int yylex(void);
 %right ASSIGN
 
 
-%left <string>  MULT
-%left <string>  DIV
-%left <string>  MOD
+%left MULT
+%left DIV
+%left MOD
 
-%left  <string> ADD
-%right <string> SUB
+%left  ADD
+%right SUB
 
 %token <value>  NUMBER
-%token <string> IDENTIFIER
-%type <statement> Statement;
+%token <id> IDENTIFIER
+
+//nonterminal type declarations
+
+%type <value> AddSub MultOP;
+%type <value> Comp;
+
+//%type <statement_t> Statement;
 %type <expression> Expression;
 
 //grammer rules - how to construct each nonterminal symbol from its parts
@@ -219,62 +236,105 @@ RelationExpr :
 
 RelationExpr_ :
   Expression Comp Expression
+  {
+    switch($2){
+      case COMPEQ:
+        //cout << *$1.code << "==" << *$3.code << endl;
+      break;
+
+      case COMPNEQ:
+        //cout << *$1.code << "!=" << *$3.code << endl;
+      break;
+
+      case COMPLT:
+        //cout << *$1.code << "<" << *$3.code << endl;
+      break;
+
+      case COMPGT:
+        //cout << *$1.code << ">" << *$3.code << endl;
+      break;
+
+      case COMPLTE:
+        //cout << *$1.code << "<=" << *$3.code << endl;
+      break;
+
+      case COMPGTE:
+        //cout << *$1.code << ">=" << *$3.code << endl;
+      break;
+
+      default:
+        cout << "bad comparator" << endl;
+      break;
+    }
+  }
 | TRUE
 | FALSE
 | L_PAREN BoolExpr R_PAREN
 ;
 
 Comp :
-  EQ {$$ =  "=="}
-| NEQ {$$ = "<>"}
-| LT {$$ = "<"}
-| GT {$$ = ">"}
-| LTE {$$ = ">="}
-| GTE {$$ = "<="}
+  EQ  {$$ = COMPEQ;}
+| NEQ {$$ = COMPNEQ;}
+| LT  {$$ = COMPLT;}
+| GT  {$$ = COMPGT;}
+| LTE {$$ = COMPLTE;}
+| GTE {$$ = COMPGTE;}
 ;
 
 
 Expression :
   Expression AddSub MultiplicativeExpr
   {
-    if($2 == "-")
-      $$ = $1 - $3;
-    else
-      $$ = $1 + $3;
+    if($2 == OPSUB){
+      //*$$.code = *$1.code + "-" + "MultiplicativeExpr";
+    }
+    else if ($2 == OPADD){
+      //*$$.code = *$1.code + "+" + "MultiplicativeExpr";
+    }
+    else{
+      cout << "error in Expression" << endl;
+      //*$$.code = "";
+    }
   }
-| MultiplicativeExpr {$$ = $1;}
+| MultiplicativeExpr
+  {
+    //*$$.code = "MultiplicativeExpr";
+  }
 ;
 
 AddSub :
-  ADD {$$ = "+"}
-| SUB {$$ = "-"}
+  ADD {$$ = OPADD}
+| SUB {$$ = OPSUB}
 ;
 
 
 MultiplicativeExpr :
   MultiplicativeExpr MultOP Term
   {
-    switch($2[0]){
-      case '*': 
-      $$ = $1 * $3;
+    switch($2){
+      case OPMULT: 
+      //$$ = $1 * $3;
+      cout << "mult "<< $2 << endl;
       break;
 
-      case '/':
-      $$ = $1 / $3;
+      case OPDIV:
+      //$$ = $1 / $3;
+      cout << "div " << $2 << endl;
       break;
 
-      case '%':
-      $$ = $1 % $3;
+      case OPMOD:
+      //$$ = $1 % $3;
+      cout << "mod " << $2 << endl;
       break;
     }
   }
-| Term {$$ = $1;}
+| Term {/*$$ = $1;*/}
 ;
 
 MultOP :
-  MULT {$$ = "*"}
-| DIV  {$$ = "/"}
-| MOD  {$$ = "%"}
+  MULT {$$ = OPMULT}
+| DIV  {$$ = OPDIV}
+| MOD  {$$ = OPMOD}
 ;
 
 
