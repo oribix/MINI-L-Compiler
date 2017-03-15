@@ -1,32 +1,32 @@
 #ifndef TYPES_H
 #define TYPES_H
 
-class Expression_t {
+class Expression {
   public:
     string code;
-    Expression_t * place;
-    Expression_t();
-    Expression_t(string code, Expression_t * place);
+    Expression * place;
+    Expression();
+    Expression(string code, Expression * place);
 };
 
-Expression_t::Expression_t(){
+Expression::Expression(){
   place = NULL;
 }
 
-Expression_t::Expression_t(string code, Expression_t * place){
+Expression::Expression(string code, Expression * place){
   this->place = place;
   this->code = code;
 }
 
-class Statement_t{
+class Statement{
   public:
     string begin;
     string after;
     string code;
 };
 
-Expression_t * newtemp(){
-  return new Expression_t();
+Expression * newtemp(){
+  return new Expression();
 }
 
 string newlabel(){

@@ -11,7 +11,7 @@ using namespace std;
 #include <string>
 #include <sstream>
 
-class Expression_t;
-class Statement_t;
+class Expression;
+class Statement;
 
 #endif

@@ -29,8 +29,8 @@ enum {COMPEQ, COMPLT, COMPGT, COMPLTE, COMPGTE, COMPNEQ};
   int value;
   char * id;
 
-  Expression_t * expr;
-  Statement_t * stmnt;
+  Expression * expr;
+  Statement * stmnt;
 }
 
 %start Program
