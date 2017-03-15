@@ -4,6 +4,7 @@
 %{
 #include "heading.h"
 #include "types.h"
+#include "mil.h"
 int yyerror(char *s);
 int yyerror(string s);
 int yylex(void);
@@ -264,20 +265,44 @@ Comp :
 Expression :
   Expression AddSub MultiplicativeExpr
   {
-    if($2 == OPSUB){
-      //*$$.code = *$1.code + "-" + "MultiplicativeExpr";
-    }
-    else if ($2 == OPADD){
-      //*$$.code = *$1.code + "+" + "MultiplicativeExpr";
-    }
-    else{
-      cout << "error in Expression" << endl;
-      //*$$.code = "";
-    }
+    $$ = new Expression();
+
+    //check if the type of lhs is same as rhs
+    SymbolType lhstype = symboltable[$1->place];
+    //SymbolType rhstype = symboltable[$3->place];
+    //if(lhstype != rhstype){cout << "error" << endl; exit(-1)}
+    string dst = $$->place = newtemp(lhstype);
+    milDeclare(dst);
+
+    //get temps from each side
+    string src1 = $1->place;
+    //string src2 = $3->place;
+    string src2 = "rhstemp";//placeholder
+
+    //get operator
+    string opr;
+    if($2 == OPSUB)
+      opr = "-";
+    else
+      opr = "+";
+
+    milCompute(opr, dst, src1, src2);
+
+    //delete the children
+    delete $1;
+    //delete $3;
   }
 | MultiplicativeExpr
   {
-    //*$$.code = "MultiplicativeExpr";
+    $$ = new Expression();
+    //todo: fix this once MultExpr implemented
+
+    //copy place from $1
+    //string place = $1->place;
+    $$->place = "MultExprTemp";//placeholder
+
+    //delete child
+    //delete $1;
   }
 ;
 
@@ -291,7 +316,7 @@ MultiplicativeExpr :
   MultiplicativeExpr MultOP Term
   {
     switch($2){
-      case OPMULT: 
+      case OPMULT:
       //$$ = $1 * $3;
       cout << "mult "<< $2 << endl;
       break;
