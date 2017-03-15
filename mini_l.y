@@ -7,21 +7,45 @@ int yyerror(char *s);
 int yyerror(string s);
 int yylex(void);
 
-string newlabel(){
-  static string temp;
-  static char c;
-  if(c < 'A' || c > 'Z'){
-    c = 'A';
-    temp.push_back(c);
-  }
-  else{
-    temp[temp.length()-1] = c;
-  }
-  c++;
-  return temp;
+class Expression_t {
+  public:
+    string code;
+    Expression_t * place;
+    Expression_t();
+    Expression_t(string code, Expression_t * place);
+};
+
+Expression_t::Expression_t(){
+  place = NULL;
 }
 
+Expression_t::Expression_t(string code, Expression_t * place){
+  this->place = place;
+  this->code = code;
+}
+
+class Statement_t{
+  public:
+    string begin;
+    string after;
+    string code;
+};
+
+Expression_t * newtemp(){
+  return new Expression_t();
+}
+
+string newlabel(){
+  static int labelnum;
+  stringstream label;
+  label << "LABEL" << labelnum++;
+  return label.str();
+}
+
+//operator enum
 enum {OPADD, OPSUB, OPMULT, OPDIV, OPMOD};
+
+//comparator enum
 enum {COMPEQ, COMPLT, COMPGT, COMPLTE, COMPGTE, COMPNEQ};
 %}
 
@@ -32,22 +56,14 @@ enum {COMPEQ, COMPLT, COMPGT, COMPLTE, COMPGTE, COMPNEQ};
 //1) names of termianls
 //2) names of non-terminals
 //3) describe operation procedures
-//4) data type of sematic values of vairous symboles
+//4) data type of sematic values of various symboles
 
 %union{
   int value;
   char * id;
 
-  struct expression_t{
-    string * code;
-    int * place;
-  }expression;
-
-  struct statement_t{
-    char* code;
-    char* begin;
-    char* after;
-  }statement;
+  Expression_t * expr;
+  Statement_t * stmnt;
 }
 
 %start Program
@@ -113,7 +129,8 @@ enum {COMPEQ, COMPLT, COMPGT, COMPLTE, COMPGTE, COMPNEQ};
 %type <value> Comp;
 
 //%type <statement_t> Statement;
-%type <expression> Expression;
+%type <expr> Expression;
+%type <stmnt> Statement;
 
 //grammer rules - how to construct each nonterminal symbol from its parts
 
