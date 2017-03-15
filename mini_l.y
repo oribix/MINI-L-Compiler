@@ -24,7 +24,7 @@ int yylex(void);
 
   Expression * expr;
   Statement * stmnt;
-  STE * ste;
+  string * name;
 }
 
 %start Program
@@ -92,7 +92,7 @@ int yylex(void);
 %type <expr> Expression;
 %type <stmnt> Statement;
 
-%type <ste> Var;
+%type <name> Var;
 
 //grammer rules - how to construct each nonterminal symbol from its parts
 
@@ -341,8 +341,12 @@ ExpressionLoop :
 
 Var :
   IDENTIFIER L_SQUARE_BRACKET Expression R_SQUARE_BRACKET
-    {$$ = new STE($1, SYM_ARR);}
-| IDENTIFIER {$$ = new STE($1, SYM_INT);}
+    {}
+| IDENTIFIER
+  {
+    string id = $1;
+    if(lookupSTE(id))
+  }
 ;
 
 Semicolon:
@@ -358,7 +362,7 @@ int yyerror(string s)
   extern char* yytext;
   extern int yylineno;
 
-  cerr << "ERROR: " << s 
+  cerr << "ERROR: " << s
     << " at symbol \"" << yytext
     << "\" on line " << yylineno
     << endl << endl;
