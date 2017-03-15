@@ -23,9 +23,9 @@ int yylex(void);
   int value;
   char * id;
 
-  Expression * expr;
-  Statement * stmnt;
-  string * name;
+  NonTerminal * nonterminal;
+  string * temp;
+  char* opval;
 }
 
 %start Program
@@ -87,13 +87,11 @@ int yylex(void);
 
 //nonterminal type declarations
 
-%type <value> AddSub MultOP;
+%type <opval> AddSub MultOP;
 %type <value> Comp;
 
-%type <expr> Expression;
-%type <stmnt> Statement;
-
-%type <name> Var;
+%type <nonterminal> Expression MultiplicativeExpr;
+%type <temp> Var;
 
 //grammer rules - how to construct each nonterminal symbol from its parts
 
@@ -265,80 +263,80 @@ Comp :
 Expression :
   Expression AddSub MultiplicativeExpr
   {
-    $$ = new Expression();
+    $$ = new NonTerminal();
 
     //check if the type of lhs is same as rhs
-    SymbolType lhstype = symboltable[$1->place];
-    //SymbolType rhstype = symboltable[$3->place];
-    //if(lhstype != rhstype){cout << "error" << endl; exit(-1)}
-    string dst = $$->place = newtemp(lhstype);
+    SymbolType lhstype = symboltable[$1->temp];
+    SymbolType rhstype = symboltable[$3->temp];
+    if(lhstype != rhstype)
+      codeGenError("Expression", 1);
+
+    //create new temp an declare it
+    string dst = $$->temp = newtemp(lhstype); 
     milDeclare(dst);
 
     //get temps from each side
-    string src1 = $1->place;
-    //string src2 = $3->place;
-    string src2 = "rhstemp";//placeholder
+    string src1 = $1->temp;
+    string src2 = $3->temp;
 
     //get operator
-    string opr;
-    if($2 == OPSUB)
-      opr = "-";
-    else
-      opr = "+";
+    string opr = $2;
 
+    //generate mil instruction
     milCompute(opr, dst, src1, src2);
 
     //delete the children
     delete $1;
-    //delete $3;
+    delete $3;
   }
 | MultiplicativeExpr
   {
-    $$ = new Expression();
-    //todo: fix this once MultExpr implemented
-
-    //copy place from $1
-    //string place = $1->place;
-    $$->place = "MultExprTemp";//placeholder
-
-    //delete child
-    //delete $1;
+    $$ = new NonTerminal($1->temp);
+    delete $1;
   }
 ;
 
 AddSub :
-  ADD {$$ = OPADD}
-| SUB {$$ = OPSUB}
+  ADD {$$ = "+";}
+| SUB {$$ = "-";}
 ;
 
 
 MultiplicativeExpr :
   MultiplicativeExpr MultOP Term
   {
-    switch($2){
-      case OPMULT:
-      //$$ = $1 * $3;
-      cout << "mult "<< $2 << endl;
-      break;
+    $$ = new NonTerminal();
 
-      case OPDIV:
-      //$$ = $1 / $3;
-      cout << "div " << $2 << endl;
-      break;
+    //get types of lhs and rhs
+    SymbolType lhstype = getType($1->temp);
+    //SymbolType rhstype = getType($3->temp);
 
-      case OPMOD:
-      //$$ = $1 % $3;
-      cout << "mod " << $2 << endl;
-      break;
-    }
+    //create new temp and declare it
+    string dst = $$->temp = newtemp(lhstype);
+    milDeclare(dst);
+
+    string opr = $2;
+    string src1 = $1->temp;
+    string src2 = "TermTemp";
+
+    //generate mil instruction
+    milCompute(opr, dst, src1, src2);
+
+    delete $1;
+    //delete $3
   }
-| Term {/*$$ = $1;*/}
+| Term
+  {
+    $$ = new NonTerminal("TermTemp");
+    //delete child
+    //delete $1;
+  }
 ;
 
 MultOP :
-  MULT {$$ = OPMULT}
-| DIV  {$$ = OPDIV}
-| MOD  {$$ = OPMOD}
+  MULT {$$ = "*";}
+| DIV  {$$ = "/";}
+| MOD  {$$ = "%";}
 ;
 
 

@@ -18,28 +18,28 @@ enum SymbolType{SYM_INT, SYM_ARR};
 
 map<string, SymbolType> symboltable;
 
-class Expression {
+class NonTerminal {
   public:
-    string code;
-    string place;
-    Expression();
-    Expression(string code, string place);
+    string temp;
+    NonTerminal();
+    NonTerminal(string temp);
 };
 
-Expression::Expression(){
+NonTerminal::NonTerminal(){
 }
 
-Expression::Expression(string code, string place){
-  this->place = place;
-  this->code = code;
+NonTerminal::NonTerminal(string temp){
+  this->temp = temp;
 }
 
+/*
 class Statement{
   public:
     string begin;
     string after;
     string code;
 };
+*/
 
 //looks through symbol table for the corrosponding entry
 //returns according to whether the entry was found or not
@@ -48,7 +48,9 @@ bool lookupSTE(string s){
   else return false;
 }
 
-
+SymbolType getType(string symname){
+  return symboltable[symname];
+}
 
 //returns a new temporary each time
 //returns a pointer to the Symbol Table Entry of a temp

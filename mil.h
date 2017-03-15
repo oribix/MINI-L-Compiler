@@ -18,4 +18,10 @@ void milCompute(string opr, string dst, string src1, string src2){
   cout << opr << " " << dst << ", " << src1 << ", " << src2 << endl;
 }
 
+void codeGenError(string rulename, int ruleNum){
+  cout << endl << "ERROR in " << rulename << " rule " << ruleNum
+       << endl << endl;
+  exit(-1);
+}
+
 #endif

@@ -11,8 +11,7 @@ using namespace std;
 #include <string>
 #include <sstream>
 
-class Expression;
-class Statement;
+class NonTerminal;
 class STE;
 
 #endif
