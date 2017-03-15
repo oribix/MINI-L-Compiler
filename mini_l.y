@@ -7,13 +7,6 @@
 int yyerror(char *s);
 int yyerror(string s);
 int yylex(void);
-
-
-//operator enum
-enum {OPADD, OPSUB, OPMULT, OPDIV, OPMOD};
-
-//comparator enum
-enum {COMPEQ, COMPLT, COMPGT, COMPLTE, COMPGTE, COMPNEQ};
 %}
 
 %error-verbose
@@ -31,6 +24,7 @@ enum {COMPEQ, COMPLT, COMPGT, COMPLTE, COMPGTE, COMPNEQ};
 
   Expression * expr;
   Statement * stmnt;
+  STE * ste;
 }
 
 %start Program
@@ -95,9 +89,10 @@ enum {COMPEQ, COMPLT, COMPGT, COMPLTE, COMPGTE, COMPNEQ};
 %type <value> AddSub MultOP;
 %type <value> Comp;
 
-//%type <statement_t> Statement;
 %type <expr> Expression;
 %type <stmnt> Statement;
+
+%type <ste> Var;
 
 //grammer rules - how to construct each nonterminal symbol from its parts
 
@@ -346,7 +341,8 @@ ExpressionLoop :
 
 Var :
   IDENTIFIER L_SQUARE_BRACKET Expression R_SQUARE_BRACKET
-| IDENTIFIER
+    {$$ = new STE($1, SYM_ARR);}
+| IDENTIFIER {$$ = new STE($1, SYM_INT);}
 ;
 
 Semicolon:

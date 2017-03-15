@@ -13,5 +13,6 @@ using namespace std;
 
 class Expression;
 class Statement;
+class STE;
 
 #endif
