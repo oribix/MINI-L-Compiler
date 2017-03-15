@@ -3,44 +3,11 @@
 
 %{
 #include "heading.h"
+#include "types.h"
 int yyerror(char *s);
 int yyerror(string s);
 int yylex(void);
 
-class Expression_t {
-  public:
-    string code;
-    Expression_t * place;
-    Expression_t();
-    Expression_t(string code, Expression_t * place);
-};
-
-Expression_t::Expression_t(){
-  place = NULL;
-}
-
-Expression_t::Expression_t(string code, Expression_t * place){
-  this->place = place;
-  this->code = code;
-}
-
-class Statement_t{
-  public:
-    string begin;
-    string after;
-    string code;
-};
-
-Expression_t * newtemp(){
-  return new Expression_t();
-}
-
-string newlabel(){
-  static int labelnum;
-  stringstream label;
-  label << "LABEL" << labelnum++;
-  return label.str();
-}
 
 //operator enum
 enum {OPADD, OPSUB, OPMULT, OPDIV, OPMOD};
