@@ -13,14 +13,14 @@ mini_l:		$(OBJS)
 lex.o:		lex.c
 		$(CC) $(CFLAGS) -c lex.c -o lex.o
 
-lex.c:		mini_l.lex 
+lex.c:		mini_l.lex
 		flex mini_l.lex
 		cp lex.yy.c lex.c
 
 bison.o:	bison.c
 		$(CC) $(CFLAGS) -c bison.c -o bison.o
 
-bison.c:	mini_l.y
+bison.c:	mini_l.y mil.h heading.h
 		bison -d -v mini_l.y
 		cp mini_l.tab.c bison.c
 		cmp -s mini_l.tab.h tok.h || cp mini_l.tab.h tok.h
