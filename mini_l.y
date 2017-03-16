@@ -349,8 +349,8 @@ Term :
   Term_
   {
     $$ = new NonTerminal();
-    $$->temp = "Term_Temp";
-    //delete $1;
+    $$->temp = $1->temp;
+    delete $1;
   }
 | SUB Term_
   {
@@ -367,11 +367,11 @@ Term :
 
     string opr = "-";
     string src1 = "0";
-    string src2 = "Term_Temp";
+    string src2 = $2->temp;
 
     milCompute(opr, dst, src1, src2);
 
-    //delete $2;
+    delete $2;
   }
 | IDENTIFIER L_PAREN Term__ R_PAREN
   {
@@ -397,8 +397,24 @@ Term :
 
 Term_ :
   Var
+  {
+    $$ = new NonTerminal();
+    $$->temp = *$1;
+    delete $1;
+  }
 | NUMBER
+  {
+    $$ = new NonTerminal();
+    stringstream s;
+    s << $1;
+    $$->temp = s.str();
+  }
 | L_PAREN Expression R_PAREN
+  {
+    $$ = new NonTerminal();
+    $$->temp = $2->temp;
+    delete $2;
+  }
 ;
 
 Term__ :
@@ -430,11 +446,39 @@ ExpressionLoop :
 
 Var :
   IDENTIFIER L_SQUARE_BRACKET Expression R_SQUARE_BRACKET
-    {}
+  {
+    //todo:
+    //may need new class for this...
+    //identifier[index] can be written or read depending on context
+    $$ = new string();
+    string id = $1;
+    if(!lookupSTE(id)){
+      //codeGenError("Var", 2);
+      cout << id << " was not declared!" << endl;
+    }
+
+    //create new temp to store result from array access
+    string dst = *$$ = newtemp(SYM_INT);
+    milDeclare(dst);
+
+    //get array variable name and index
+    string src = $1;
+    string index = $3->temp;
+
+    milGenInstruction("=[]", dst, src, index);
+
+    delete $3;
+  }
 | IDENTIFIER
   {
+    $$ = new string();
     string id = $1;
-    if(lookupSTE(id))
+    //if(!lookupSTE(id)){
+    //  //codeGenError("Var", 2);
+    //  cout << id << " was not declared!" << endl;
+    //}
+
+    *$$ = id;
   }
 ;
 
