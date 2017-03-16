@@ -22,12 +22,13 @@ int yylex(void);
 
 %union{
   int value;
-  char * id;
+  char * sval;
 
   NonTerminal * nonterminal;
   NTList * ntlist;
   string * temp;
   char* opval;
+
 }
 
 %start Program
@@ -85,7 +86,7 @@ int yylex(void);
 %right SUB
 
 %token <value>  NUMBER
-%token <id> IDENTIFIER
+%token <sval> IDENTIFIER
 
 //nonterminal type declarations
 
