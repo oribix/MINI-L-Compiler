@@ -33,6 +33,14 @@ NonTerminal::NonTerminal(string temp){
   this->temp = temp;
 }
 
+class Variable : public NonTerminal{
+  public:
+    string index;
+    Variable();
+};
+
+Variable::Variable(){}
+
 //wrapper for union
 class NTList{
   public:

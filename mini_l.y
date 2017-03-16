@@ -25,6 +25,7 @@ int yylex(void);
   char * sval;
 
   NonTerminal * nonterminal;
+  Variable * variable;
   NTList * ntlist;
   string * temp;
   char* opval;
@@ -101,7 +102,7 @@ int yylex(void);
 %type <nonterminal> BoolExpr RelationAndExpr RelationExpr RelationExpr_;
 
 %type <ntlist> Term__;
-%type <temp> Var;
+%type <variable> Var;
 
 //grammer rules - how to construct each nonterminal symbol from its parts
 
@@ -410,7 +411,34 @@ Term_ :
   Var
   {
     $$ = new NonTerminal();
-    $$->temp = *$1;
+
+    //get var type
+    string id = $1->temp;
+    SymbolType type = getType(id);
+    switch(type){
+      case SYM_INT:
+      //pass up value
+      $$->temp = $1->temp;
+      break;
+
+      case SYM_ARR:
+      {
+        //dereference array
+        string dst = $$->temp = newtemp(SYM_INT);
+        string src = $1->temp;
+        string index = $1->index;
+
+        //generate instructions
+        milDeclare(dst);
+        milGenInstruction("=[]", dst, src, index);
+      }
+      break;
+
+      default:
+      codeGenError("Term_", 1);
+      break;
+    }
+
     delete $1;
   }
 | NUMBER
@@ -461,35 +489,37 @@ Var :
     //todo:
     //may need new class for this...
     //identifier[index] can be written or read depending on context
-    $$ = new string();
+    $$ = new Variable();
     string id = $1;
-    //if(!lookupSTE(id)){
-    //  //codeGenError("Var", 2);
-    //  cout << id << " was not declared!" << endl;
-    //}
 
-    //create new temp to store result from array access
-    string dst = *$$ = newtemp(SYM_INT);
-    milDeclare(dst);
+    //todo: delete this nephew
+    //should be handled by declaration rule
+    symboltable[id] = SYM_ARR;
+    if(!lookupSTE(id)){
+      //codeGenError("Var", 2);
+      cout << id << " was not declared!" << endl;
+    }
 
-    //get array variable name and index
-    string src = $1;
-    string index = $3->temp;
-
-    milGenInstruction("=[]", dst, src, index);
+    $$->temp = id;
+    $$->index = $3->temp;
 
     delete $3;
   }
 | IDENTIFIER
   {
-    $$ = new string();
+    $$ = new Variable();
     string id = $1;
-    //if(!lookupSTE(id)){
-    //  //codeGenError("Var", 2);
-    //  cout << id << " was not declared!" << endl;
-    //}
 
-    *$$ = id;
+    //todo: delete this nephew
+    //should be handled by declaration rule
+    symboltable[id] = SYM_INT;
+    if(!lookupSTE(id)){
+      //codeGenError("Var", 2);
+      cout << id << " was not declared!" << endl;
+    }
+
+    $$->temp = id;
+    $$->index = -1;
   }
 ;
 
