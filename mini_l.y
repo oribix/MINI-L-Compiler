@@ -176,6 +176,37 @@ Statement :
 
 Assignment :
   Var ASSIGN Expression
+  {
+    string id = $1->temp;
+
+    string dst;
+    string src = $3->temp;
+
+    SymbolType type = getType(id);
+    switch(type){
+      case SYM_INT:
+      {
+        dst = id;
+        milGenInstruction("=", dst, src);
+      }
+      break;
+
+      case SYM_ARR:
+      {
+        dst = id;
+        string index = $1->index;
+        milGenInstruction("[]=", dst, index, src);
+      }
+      break;
+
+      default:
+      codeGenError("Assignment", 1);
+      break;
+    }
+
+    delete $1;
+    delete $3;
+  }
 ;
 
 
