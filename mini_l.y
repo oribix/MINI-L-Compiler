@@ -171,6 +171,10 @@ Statement :
 | WRITE VarLoop
 | CONTINUE
 | RETURN Expression
+  {
+    milGenInstruction("ret", $2->temp);
+    delete $2;
+  }
 ;
 
 
@@ -222,6 +226,27 @@ OptElse :
 
 WhileLoop :
   WHILE BoolExpr BEGINLOOP StatementLoop ENDLOOP
+  {
+    /*
+    string begin = newlabel();
+    string end = newlabel();
+    string boolexpr = $2->temp;
+    SymbolType type = getType(boolexpr);
+    string inverse = newtemp(type);
+
+    //begining of loop
+    milDeclare(inverse);
+    milGenInstruction(":", begin);
+    milCompute("!", inverse, boolexpr);
+    milGenInstruction("?:=", end, inverse);
+    cout << "statements go here!"<< endl;
+    milGenInstruction(":=", begin);
+    milGenInstruction(":", end);
+
+    delete $2;
+    //delete $4;
+    */
+  }
 ;
 
 
