@@ -90,13 +90,16 @@ int yylex(void);
 
 //nonterminal type declarations
 
-%type <opval> AddSub MultOP;
-%type <value> Comp;
+%type <sval> AddSub MultOP;
+%type <sval> Comp;
 
 %type <nonterminal> Expression MultiplicativeExpr;
 %type <ntlist> ExpressionLoop;
 
 %type <nonterminal> Term Term_;
+
+%type <nonterminal> BoolExpr RelationAndExpr RelationExpr RelationExpr_;
+
 %type <ntlist> Term__;
 %type <temp> Var;
 
@@ -216,54 +219,61 @@ RelationAndExpr :
 
 RelationExpr :
   RelationExpr_
+  {
+    $$ = new NonTerminal($1->temp);
+    delete $1;
+  }
 | NOT RelationExpr_
+  {
+    $$ = new NonTerminal();
+
+    //print mil code to invert RelationExpr_
+    string dst = $$->temp = newtemp(SYM_INT);
+    milDeclare(dst);
+    string src = $2->temp;
+    milCompute("!", dst, src);
+
+    delete $2;
+  }
 ;
 
 RelationExpr_ :
   Expression Comp Expression
   {
-    switch($2){
-      case COMPEQ:
-        //cout << *$1.code << "==" << *$3.code << endl;
-      break;
+    $$ = new NonTerminal();
+    string lhs = $1->temp;
+    string rhs = $3->temp;
 
-      case COMPNEQ:
-        //cout << *$1.code << "!=" << *$3.code << endl;
-      break;
+    string dst = $$->temp = newtemp(SYM_INT);
+    milDeclare(dst);
 
-      case COMPLT:
-        //cout << *$1.code << "<" << *$3.code << endl;
-      break;
+    string opr = $2;
+    milCompute(opr, dst, lhs, rhs);
 
-      case COMPGT:
-        //cout << *$1.code << ">" << *$3.code << endl;
-      break;
-
-      case COMPLTE:
-        //cout << *$1.code << "<=" << *$3.code << endl;
-      break;
-
-      case COMPGTE:
-        //cout << *$1.code << ">=" << *$3.code << endl;
-      break;
-
-      default:
-        cout << "bad comparator" << endl;
-      break;
-    }
+    delete $1;
+    delete $3;
   }
 | TRUE
+  {
+    $$ = new NonTerminal("1");
+  }
 | FALSE
+  {
+    $$ = new NonTerminal("0");
+  }
 | L_PAREN BoolExpr R_PAREN
+  {
+    $$ = new NonTerminal("BoolExprTemp");
+  }
 ;
 
 Comp :
-  EQ  {$$ = COMPEQ;}
-| NEQ {$$ = COMPNEQ;}
-| LT  {$$ = COMPLT;}
-| GT  {$$ = COMPGT;}
-| LTE {$$ = COMPLTE;}
-| GTE {$$ = COMPGTE;}
+  EQ  {$$ = "==";}
+| NEQ {$$ = "!=";}
+| LT  {$$ = "<";}
+| GT  {$$ = ">";}
+| LTE {$$ = "<=";}
+| GTE {$$ = ">=";}
 ;
 
 
@@ -324,7 +334,7 @@ MultiplicativeExpr :
 
     string opr = $2;
     string src1 = $1->temp;
-    string src2 = "TermTemp";
+    string src2 = $3->temp;
 
     //generate mil instruction
     milCompute(opr, dst, src1, src2);
@@ -453,10 +463,10 @@ Var :
     //identifier[index] can be written or read depending on context
     $$ = new string();
     string id = $1;
-    if(!lookupSTE(id)){
-      //codeGenError("Var", 2);
-      cout << id << " was not declared!" << endl;
-    }
+    //if(!lookupSTE(id)){
+    //  //codeGenError("Var", 2);
+    //  cout << id << " was not declared!" << endl;
+    //}
 
     //create new temp to store result from array access
     string dst = *$$ = newtemp(SYM_INT);
