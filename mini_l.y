@@ -375,8 +375,10 @@ Term :
     string dst = $$->temp = newtemp(SYM_INT);
     milDeclare(dst);
 
-    cout << "function call to " << $1 << endl;
-    //todo: call a function
+    cout << "add param for each expression in Term__" << endl;
+
+    string functionName = $1;
+    milFunctionCall(functionName, dst);
     //delete $3;
   }
 ;
