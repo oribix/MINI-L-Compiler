@@ -91,6 +91,7 @@ int yylex(void);
 %type <value> Comp;
 
 %type <nonterminal> Expression MultiplicativeExpr;
+%type <nonterminal> Term Term_ Term__;
 %type <temp> Var;
 
 //grammer rules - how to construct each nonterminal symbol from its parts
@@ -323,13 +324,12 @@ MultiplicativeExpr :
     milCompute(opr, dst, src1, src2);
 
     delete $1;
-    //delete $3
+    delete $3
   }
 | Term
   {
-    $$ = new NonTerminal("TermTemp");
-    //delete child
-    //delete $1;
+    $$ = new NonTerminal($1->temp);
+    delete $1;
   }
 ;
 
@@ -342,8 +342,43 @@ MultOP :
 
 Term :
   Term_
+  {
+    $$ = new NonTerminal();
+    $$->temp = "Term_Temp";
+    //delete $1;
+  }
 | SUB Term_
+  {
+    $$ = new NonTerminal();
+
+    //todo:get type of term_
+    SymbolType type;
+    //type = getType($2->temp);
+    type = SYM_INT;
+
+    //create new temp and declare it
+    string dst = $$->temp = newtemp(type);
+    milDeclare(dst);
+
+    string opr = "-";
+    string src1 = "0";
+    string src2 = "Term_Temp";
+
+    milCompute(opr, dst, src1, src2);
+
+    //delete $2;
+  }
 | IDENTIFIER L_PAREN Term__ R_PAREN
+  {
+    $$ = new NonTerminal();
+
+    string dst = $$->temp = newtemp(SYM_INT);
+    milDeclare(dst);
+
+    cout << "function call to " << $1 << endl;
+    //todo: call a function
+    //delete $3;
+  }
 ;
 
 Term_ :
