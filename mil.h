@@ -34,7 +34,7 @@ void milCompute(string opr, string dst, string src1, string src2){
 
 //call function
 void milFunctionCall(string name, string dst){
-  milGenInstruction(name, dst);
+  milGenInstruction("call", name, dst);
 }
 
 void codeGenError(string rulename, int ruleNum){

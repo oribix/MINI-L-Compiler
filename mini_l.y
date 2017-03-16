@@ -5,6 +5,7 @@
 #include "heading.h"
 #include "types.h"
 #include "mil.h"
+#include <list>
 int yyerror(char *s);
 int yyerror(string s);
 int yylex(void);
@@ -24,6 +25,7 @@ int yylex(void);
   char * id;
 
   NonTerminal * nonterminal;
+  NTList * ntlist;
   string * temp;
   char* opval;
 }
@@ -91,7 +93,10 @@ int yylex(void);
 %type <value> Comp;
 
 %type <nonterminal> Expression MultiplicativeExpr;
-%type <nonterminal> Term Term_ Term__;
+%type <ntlist> ExpressionLoop;
+
+%type <nonterminal> Term Term_;
+%type <ntlist> Term__;
 %type <temp> Var;
 
 //grammer rules - how to construct each nonterminal symbol from its parts
@@ -273,7 +278,7 @@ Expression :
       codeGenError("Expression", 1);
 
     //create new temp an declare it
-    string dst = $$->temp = newtemp(lhstype); 
+    string dst = $$->temp = newtemp(lhstype);
     milDeclare(dst);
 
     //get temps from each side
@@ -375,11 +380,18 @@ Term :
     string dst = $$->temp = newtemp(SYM_INT);
     milDeclare(dst);
 
-    cout << "add param for each expression in Term__" << endl;
+    //add param for each expression in Term__
+    list<NonTerminal> params = $3->ntlist;
+    list<NonTerminal>::iterator it;
+    for(it = params.begin(); it != params.end(); it++){
+      string temp = it->temp;
+      milGenInstruction("param", temp);
+    }
 
+    //call function
     string functionName = $1;
     milFunctionCall(functionName, dst);
-    //delete $3;
+    delete $3;
   }
 ;
 
@@ -391,12 +403,29 @@ Term_ :
 
 Term__ :
   ExpressionLoop
+  {
+    //pass up list of expressions
+    $$ = $1;
+  }
 | /* epsilon */
+  {
+    //return empty list
+    $$ = new NTList;
+  }
 ;
 
 ExpressionLoop :
   ExpressionLoop COMMA Expression
+  {
+    $1->ntlist.push_back(*$3);
+    delete $3;
+  }
 | Expression
+  {
+    $$ = new NTList();
+    $$->ntlist.push_back(*$1);
+    delete $1;
+  }
 ;
 
 Var :

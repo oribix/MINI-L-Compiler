@@ -12,6 +12,7 @@ using namespace std;
 #include <sstream>
 
 class NonTerminal;
+class NTList;
 class STE;
 
 #endif

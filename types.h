@@ -2,6 +2,7 @@
 #define TYPES_H
 
 #include <map>
+#include <list>
 
 
 //operator enum
@@ -31,6 +32,12 @@ NonTerminal::NonTerminal(){
 NonTerminal::NonTerminal(string temp){
   this->temp = temp;
 }
+
+//wrapper for union
+class NTList{
+  public:
+    list<NonTerminal> ntlist;
+};
 
 /*
 class Statement{
