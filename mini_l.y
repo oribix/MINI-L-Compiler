@@ -207,14 +207,52 @@ VarLoop :
 
 BoolExpr :
   BoolExpr OR RelationAndExpr
+  {
+    $$ = new NonTerminal();
+
+    SymbolType type = getType($1->temp);
+    string dst = $$->temp = newtemp(type);
+    string src1 = $1->temp;
+    string src2 = $3->temp;
+
+    //generate mil functions
+    milDeclare(dst);
+    milCompute("||", dst, src1, src2);
+
+    delete $1;
+    delete $3;
+  }
 | RelationAndExpr
+  {
+    $$ = new NonTerminal($1->temp);
+    delete $1;
+  }
 ;
 
 
 
 RelationAndExpr :
   RelationAndExpr AND RelationExpr
+  {
+    $$ = new NonTerminal();
+
+    SymbolType type = getType($1->temp);
+    string dst = $$->temp = newtemp(type);
+    string src1 = $1->temp;
+    string src2 = $3->temp;
+
+    //generate mil functions
+    milDeclare(dst);
+    milCompute("&&", dst, src1, src2);
+
+    delete $1;
+    delete $3;
+  }
 | RelationExpr
+  {
+    $$ = new NonTerminal($1->temp);
+    delete $1;
+  }
 ;
 
 
