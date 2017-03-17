@@ -368,8 +368,8 @@ RelationExpr_ :
 
     //generate code
     string code;
-    code += "$1->code\n";
-    code += "$3->code\n";
+    code += $1->code;
+    code += $3->code;
     code += milDeclare(dst);
     code += milCompute(opr, dst, lhs, rhs);
     $$->code = code;
@@ -380,17 +380,6 @@ RelationExpr_ :
 | TRUE
   {
     $$ = new NonTerminal("1");
-
-    /*
-    //get arguments
-    string dst = $$->temp = newtemp(SYM_INT);
-
-    //generate code
-    string code;
-    code += milDeclare(dst);
-    code += milGenInstruction("=", dst, "1");
-    $$->code = code;
-    */
   }
 | FALSE
   {
@@ -434,8 +423,12 @@ Expression :
     string opr = $2;
 
     //generate code
-    cout << milDeclare(dst);
-    cout << milCompute(opr, dst, src1, src2);
+    string code;
+    code += $1->code;
+    code += $3->code;
+    code += milDeclare(dst);
+    code += milCompute(opr, dst, src1, src2);
+    $$->code = code;
 
     //delete the children
     delete $1;
@@ -444,6 +437,7 @@ Expression :
 | MultiplicativeExpr
   {
     $$ = new NonTerminal($1->temp);
+    $$->code = $1->code;
     delete $1;
   }
 ;
@@ -463,16 +457,18 @@ MultiplicativeExpr :
     SymbolType lhstype = getType($1->temp);
     //SymbolType rhstype = getType($3->temp);
 
-    //create new temp and declare it
+    //get args
     string dst = $$->temp = newtemp(lhstype);
-    cout << milDeclare(dst);
-
     string opr = $2;
     string src1 = $1->temp;
     string src2 = $3->temp;
 
-    //generate mil instruction
-    cout << milCompute(opr, dst, src1, src2);
+    //generate code
+    string code;
+    code += $1->code;
+    code += "TermCode\n";
+    code += milDeclare(dst);
+    code += milCompute(opr, dst, src1, src2);
 
     delete $1;
     delete $3
@@ -480,6 +476,7 @@ MultiplicativeExpr :
 | Term
   {
     $$ = new NonTerminal($1->temp);
+    $$->code = "TermCode\n";
     delete $1;
   }
 ;
