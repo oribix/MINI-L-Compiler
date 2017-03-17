@@ -4,37 +4,37 @@
 #include <iostream>
 
 //generates mil instructions
-void milGenInstruction(string instr, string arg1){
-  cout << instr << " " << arg1 << endl;
+string milGenInstruction(string instr, string arg1){
+  return instr + " " + arg1 + "\n";
 }
 
-void milGenInstruction(string instr, string arg1, string arg2){
-  cout << instr << " " << arg1 << ", " << arg2 << endl;
+string milGenInstruction(string instr, string arg1, string arg2){
+  return instr + " " + arg1 + ", " + arg2 + "\n";
 }
 
-void milGenInstruction(string instr, string arg1, string arg2, string arg3){
-  cout << instr << " " << arg1 << ", " << arg2 << ", " << arg3 << endl;
+string milGenInstruction(string instr, string arg1, string arg2, string arg3){
+  return instr + " " + arg1 + ", " + arg2 + ", " + arg3 + "\n";
 }
 
 
 //declare temp in mil code
-void milDeclare(string name){
-  milGenInstruction(".", name);
+string milDeclare(string name){
+  return milGenInstruction(".", name);
 }
 
 //handles arithmetic, comparison, and logical operators
-void milCompute(string opr, string dst, string src1){
-  milGenInstruction(opr, dst, src1);
+string milCompute(string opr, string dst, string src1){
+  return milGenInstruction(opr, dst, src1);
 }
 
 //handles arithmetic, comparison, and logical operators
-void milCompute(string opr, string dst, string src1, string src2){
-  milGenInstruction(opr, dst, src1, src2);
+string milCompute(string opr, string dst, string src1, string src2){
+  return milGenInstruction(opr, dst, src1, src2);
 }
 
 //call function
-void milFunctionCall(string name, string dst){
-  milGenInstruction("call", name, dst);
+string milFunctionCall(string name, string dst){
+  return milGenInstruction("call", name, dst);
 }
 
 void codeGenError(string rulename, int ruleNum){

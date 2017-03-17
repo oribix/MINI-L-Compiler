@@ -4,13 +4,6 @@
 #include <map>
 #include <list>
 
-
-//operator enum
-enum {OPADD, OPSUB, OPMULT, OPDIV, OPMOD};
-
-//comparator enum
-enum {COMPEQ, COMPLT, COMPGT, COMPLTE, COMPGTE, COMPNEQ};
-
 //Identifier Types
 enum IDTYPE{IDFUNC, IDINT, IDARR};
 
@@ -22,6 +15,7 @@ map<string, SymbolType> symboltable;
 class NonTerminal {
   public:
     string temp;
+    string code;
     NonTerminal();
     NonTerminal(string temp);
 };

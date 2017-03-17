@@ -205,7 +205,7 @@ Statement :
   }
 | RETURN Expression
   {
-    milGenInstruction("ret", $2->temp);
+    cout << milGenInstruction("ret", $2->temp);
     delete $2;
   }
 ;
@@ -224,7 +224,7 @@ Assignment :
       case SYM_INT:
       {
         dst = id;
-        milGenInstruction("=", dst, src);
+        cout << milGenInstruction("=", dst, src);
       }
       break;
 
@@ -232,7 +232,7 @@ Assignment :
       {
         dst = id;
         string index = $1->index;
-        milGenInstruction("[]=", dst, index, src);
+        cout << milGenInstruction("[]=", dst, index, src);
       }
       break;
 
@@ -260,25 +260,32 @@ OptElse :
 WhileLoop :
   WHILE BoolExpr BEGINLOOP StatementLoop ENDLOOP
   {
-    /*
+    //labels
     string begin = newlabel();
     string end = newlabel();
-    string boolexpr = $2->temp;
-    SymbolType type = getType(boolexpr);
-    string inverse = newtemp(type);
+    string conditional = newlabel();
 
-    //begining of loop
-    milDeclare(inverse);
-    milGenInstruction(":", begin);
-    milCompute("!", inverse, boolexpr);
-    milGenInstruction("?:=", end, inverse);
-    cout << "statements go here!"<< endl;
-    milGenInstruction(":=", begin);
-    milGenInstruction(":", end);
+    string boolexpr = $2->temp;
+    string boolExprCode = $2->code;
+
+    //todo: check if BoolExpr is correct type
+    //SymbolType type = getType(boolexpr);
+
+
+    //generate code
+    //generate label before boolean calculation
+    cout << milGenInstruction(":", conditional);
+    //todo: calculate the boolean
+    cout << boolExprCode << flush;
+    cout << milGenInstruction("?:=", begin, boolexpr);
+    cout << milGenInstruction(":=", end);
+    cout << milGenInstruction(":", begin);
+    cout << endl << "statements go here!"<< endl << endl;
+    cout << milGenInstruction(":=", begin);
+    cout << milGenInstruction(":", end);
 
     delete $2;
     //delete $4;
-    */
   }
 ;
 
@@ -304,9 +311,13 @@ BoolExpr :
     string src1 = $1->temp;
     string src2 = $3->temp;
 
-    //generate mil functions
-    milDeclare(dst);
-    milCompute("||", dst, src1, src2);
+    //generate code
+    string code;
+    code += $1->code;
+    code += $3->code;
+    code += milDeclare(dst);
+    code += milCompute("||", dst, src1, src2);
+    $$->code = code;
 
     delete $1;
     delete $3;
@@ -314,6 +325,7 @@ BoolExpr :
 | RelationAndExpr
   {
     $$ = new NonTerminal($1->temp);
+    $$->code = $1->code;
     delete $1;
   }
 ;
@@ -330,9 +342,13 @@ RelationAndExpr :
     string src1 = $1->temp;
     string src2 = $3->temp;
 
-    //generate mil functions
-    milDeclare(dst);
-    milCompute("&&", dst, src1, src2);
+    //generate code
+    string code;
+    code += $1->code;
+    code += $3->code;
+    code += milDeclare(dst);
+    code += milCompute("&&", dst, src1, src2);
+    $$->code = code;
 
     delete $1;
     delete $3;
@@ -340,6 +356,7 @@ RelationAndExpr :
 | RelationExpr
   {
     $$ = new NonTerminal($1->temp);
+    $$->code = $1->code;
     delete $1;
   }
 ;
@@ -349,6 +366,7 @@ RelationExpr :
   RelationExpr_
   {
     $$ = new NonTerminal($1->temp);
+    $$->code = $1->code;
     delete $1;
   }
 | NOT RelationExpr_
@@ -357,9 +375,14 @@ RelationExpr :
 
     //print mil code to invert RelationExpr_
     string dst = $$->temp = newtemp(SYM_INT);
-    milDeclare(dst);
     string src = $2->temp;
-    milCompute("!", dst, src);
+
+    //generate code
+    string code;
+    code += $2->code;
+    code += milDeclare(dst);
+    code += milCompute("!", dst, src);
+    $$->code = code;
 
     delete $2;
   }
@@ -369,14 +392,20 @@ RelationExpr_ :
   Expression Comp Expression
   {
     $$ = new NonTerminal();
+
+    //get arguments
     string lhs = $1->temp;
     string rhs = $3->temp;
-
     string dst = $$->temp = newtemp(SYM_INT);
-    milDeclare(dst);
-
     string opr = $2;
-    milCompute(opr, dst, lhs, rhs);
+
+    //generate code
+    string code;
+    code += $1->code;
+    code += $3->code;
+    code += milDeclare(dst);
+    code += milCompute(opr, dst, lhs, rhs);
+    $$->code = code;
 
     delete $1;
     delete $3;
@@ -391,7 +420,11 @@ RelationExpr_ :
   }
 | L_PAREN BoolExpr R_PAREN
   {
-    $$ = new NonTerminal("BoolExprTemp");
+    $$ = new NonTerminal();
+    $$->temp = $2->temp;
+    $$->code = $2->code;
+
+    delete $2;
   }
 ;
 
@@ -416,19 +449,19 @@ Expression :
     if(lhstype != rhstype)
       codeGenError("Expression", 1);
 
-    //create new temp an declare it
+    //get args
     string dst = $$->temp = newtemp(lhstype);
-    milDeclare(dst);
-
-    //get temps from each side
     string src1 = $1->temp;
     string src2 = $3->temp;
-
-    //get operator
     string opr = $2;
 
-    //generate mil instruction
-    milCompute(opr, dst, src1, src2);
+    //generate code
+    string code;
+    code += $1->code;
+    code += $3->code;
+    code += milDeclare(dst);
+    code += milCompute(opr, dst, src1, src2);
+    $$->code = code;
 
     //delete the children
     delete $1;
@@ -437,6 +470,7 @@ Expression :
 | MultiplicativeExpr
   {
     $$ = new NonTerminal($1->temp);
+    $$->code = $1->code;
     delete $1;
   }
 ;
@@ -456,16 +490,18 @@ MultiplicativeExpr :
     SymbolType lhstype = getType($1->temp);
     //SymbolType rhstype = getType($3->temp);
 
-    //create new temp and declare it
+    //get args
     string dst = $$->temp = newtemp(lhstype);
-    milDeclare(dst);
-
     string opr = $2;
     string src1 = $1->temp;
     string src2 = $3->temp;
 
-    //generate mil instruction
-    milCompute(opr, dst, src1, src2);
+    //generate code
+    string code;
+    code += $1->code;
+    code += "TermCode\n";
+    code += milDeclare(dst);
+    code += milCompute(opr, dst, src1, src2);
 
     delete $1;
     delete $3
@@ -473,6 +509,7 @@ MultiplicativeExpr :
 | Term
   {
     $$ = new NonTerminal($1->temp);
+    $$->code = "TermCode\n";
     delete $1;
   }
 ;
@@ -502,13 +539,13 @@ Term :
 
     //create new temp and declare it
     string dst = $$->temp = newtemp(type);
-    milDeclare(dst);
+    cout << milDeclare(dst);
 
     string opr = "-";
     string src1 = "0";
     string src2 = $2->temp;
 
-    milCompute(opr, dst, src1, src2);
+    cout << milCompute(opr, dst, src1, src2);
 
     delete $2;
   }
@@ -517,19 +554,19 @@ Term :
     $$ = new NonTerminal();
 
     string dst = $$->temp = newtemp(SYM_INT);
-    milDeclare(dst);
+    cout << milDeclare(dst);
 
     //add param for each expression in Term__
     list<NonTerminal> params = $3->ntlist;
     list<NonTerminal>::iterator it;
     for(it = params.begin(); it != params.end(); it++){
       string temp = it->temp;
-      milGenInstruction("param", temp);
+      cout << milGenInstruction("param", temp);
     }
 
     //call function
     string functionName = $1;
-    milFunctionCall(functionName, dst);
+    cout << milFunctionCall(functionName, dst);
     delete $3;
   }
 ;
@@ -556,8 +593,8 @@ Term_ :
         string index = $1->index;
 
         //generate instructions
-        milDeclare(dst);
-        milGenInstruction("=[]", dst, src, index);
+        cout << milDeclare(dst);
+        cout << milGenInstruction("=[]", dst, src, index);
       }
       break;
 
@@ -617,9 +654,6 @@ ExpressionLoop :
 Var :
   IDENTIFIER L_SQUARE_BRACKET Expression R_SQUARE_BRACKET
   {
-    //todo:
-    //may need new class for this...
-    //identifier[index] can be written or read depending on context
     $$ = new Variable();
     string id = $1;
 
@@ -631,8 +665,13 @@ Var :
       cout << id << " was not declared!" << endl;
     }
 
+    //get args
+    //string dst = $$->temp = newtemp(SYM_ARR);
     $$->temp = id;
     $$->index = $3->temp;
+
+    //generate code
+    //cout << milDeclare(dst);
 
     delete $3;
   }
@@ -649,8 +688,13 @@ Var :
       cout << id << " was not declared!" << endl;
     }
 
+    //get args
+    //string dst = $$->temp = newtemp(SYM_INT);
     $$->temp = id;
     $$->index = -1;
+
+    //generate code
+    //cout << milDeclare(dst);
   }
 ;
 
