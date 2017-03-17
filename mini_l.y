@@ -96,7 +96,9 @@ int yylex(void);
 
 %type <nonterminal> Expression MultiplicativeExpr;
 %type <ntlist> ExpressionLoop;
-%type <ntlist> StatmentLoop;
+
+%type <nonterminal> Statement;
+%type <ntlist> StatementLoop;
 
 %type <nonterminal> Term Term_;
 
@@ -146,15 +148,13 @@ StatementLoop :
   StatementLoop Statement Semicolon
   {
     $1->ntlist.push_back(*$2);
-    //todo: define statement as non terminal
-    //delete $2  
+    delete $2;
   }
 | Statement Semicolon
   {
-    $$ = new NTLIST();
+    $$ = new NTList();
     $$->ntlist.push_back(*$1);
-    //delete $1;
-    
+    delete $1;
   }
 | error {yyerrok;}
 ;
