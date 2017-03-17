@@ -96,6 +96,7 @@ int yylex(void);
 
 %type <nonterminal> Expression MultiplicativeExpr;
 %type <ntlist> ExpressionLoop;
+%type <ntlist> StatmentLoop;
 
 %type <nonterminal> Term Term_;
 
@@ -143,7 +144,18 @@ DecLoop :
 
 StatementLoop :
   StatementLoop Statement Semicolon
+  {
+    $1->ntlist.push_back(*$2);
+    //todo: define statement as non terminal
+    //delete $2  
+  }
 | Statement Semicolon
+  {
+    $$ = new NTLIST();
+    $$->ntlist.push_back(*$1);
+    //delete $1;
+    
+  }
 | error {yyerrok;}
 ;
 
@@ -164,12 +176,33 @@ IdentifierLoop :
 
 Statement :
   Assignment
+  {
+  $$ = new NonTerminal();
+  }
 | IfStatement
+  {
+  $$ = new NonTerminal();
+  }
 | WhileLoop
+  {
+  $$ = new NonTerminal();
+  }
 | DoWhile
+  {
+  $$ = new NonTerminal();
+  }
 | READ VarLoop
+  {
+  $$ = new NonTerminal();
+  }
 | WRITE VarLoop
+  {
+  $$ = new NonTerminal();
+  }
 | CONTINUE
+  {
+  $$ = new NonTerminal();
+  }
 | RETURN Expression
   {
     milGenInstruction("ret", $2->temp);
@@ -576,6 +609,10 @@ ExpressionLoop :
     delete $1;
   }
 ;
+
+
+
+
 
 Var :
   IDENTIFIER L_SQUARE_BRACKET Expression R_SQUARE_BRACKET
