@@ -4,13 +4,6 @@
 #include <map>
 #include <list>
 
-
-//operator enum
-enum {OPADD, OPSUB, OPMULT, OPDIV, OPMOD};
-
-//comparator enum
-enum {COMPEQ, COMPLT, COMPGT, COMPLTE, COMPGTE, COMPNEQ};
-
 //Identifier Types
 enum IDTYPE{IDFUNC, IDINT, IDARR};
 
@@ -40,6 +33,19 @@ class Variable : public NonTerminal{
 };
 
 Variable::Variable(){}
+
+class BoolExpr : public NonTerminal{
+  public:
+    string code;
+    BoolExpr();
+    BoolExpr(string temp);
+};
+
+BoolExpr::BoolExpr(){}
+
+BoolExpr::BoolExpr(string temp){
+  this->temp = temp;
+}
 
 //wrapper for union
 class NTList{

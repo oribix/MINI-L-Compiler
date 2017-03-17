@@ -13,6 +13,7 @@ using namespace std;
 
 class NonTerminal;
 class Variable;
+class BoolExpr;
 class NTList;
 class STE;
 
