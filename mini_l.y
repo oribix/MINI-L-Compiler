@@ -94,11 +94,15 @@ int yylex(void);
 %type <sval> AddSub MultOP;
 %type <sval> Comp;
 
+%type <nonterminal> FunctionDec;
+
 %type <nonterminal> Expression MultiplicativeExpr;
 %type <ntlist> ExpressionLoop;
 
 %type <nonterminal> Statement;
 %type <ntlist> StatementLoop;
+
+%type <nonterminal> Assignment;
 
 %type <nonterminal> Term Term_;
 
@@ -125,6 +129,10 @@ Function :
 
 FunctionDec:
   FUNCTION IDENTIFIER Semicolon
+  {
+    string functionName = $2;
+    cout << milGenInstruction(":", functionName);
+  }
 ;
 
 Params :
@@ -224,7 +232,11 @@ Assignment :
       case SYM_INT:
       {
         dst = id;
-        cout << milGenInstruction("=", dst, src);
+
+        //generate code
+        string code;
+        code += milGenInstruction("=", dst, src);
+        $$->code = code;
       }
       break;
 
@@ -232,7 +244,11 @@ Assignment :
       {
         dst = id;
         string index = $1->index;
-        cout << milGenInstruction("[]=", dst, index, src);
+
+        //generate code
+        string code;
+        code += milGenInstruction("[]=", dst, index, src);
+        $$->code = code;
       }
       break;
 
@@ -240,6 +256,8 @@ Assignment :
       codeGenError("Assignment", 1);
       break;
     }
+
+    cout << $$->code;
 
     delete $1;
     delete $3;
@@ -499,7 +517,7 @@ MultiplicativeExpr :
     //generate code
     string code;
     code += $1->code;
-    code += "TermCode\n";
+    code += $3->code;
     code += milDeclare(dst);
     code += milCompute(opr, dst, src1, src2);
 
@@ -509,7 +527,7 @@ MultiplicativeExpr :
 | Term
   {
     $$ = new NonTerminal($1->temp);
-    $$->code = "TermCode\n";
+    $$->code = $1->code;
     delete $1;
   }
 ;
@@ -526,6 +544,7 @@ Term :
   {
     $$ = new NonTerminal();
     $$->temp = $1->temp;
+    $$->code = $1->code;
     delete $1;
   }
 | SUB Term_
@@ -533,19 +552,19 @@ Term :
     $$ = new NonTerminal();
 
     //todo:get type of term_
-    SymbolType type;
-    //type = getType($2->temp);
-    type = SYM_INT;
+    SymbolType type = getType($2->temp);
 
-    //create new temp and declare it
-    string dst = $$->temp = newtemp(type);
-    cout << milDeclare(dst);
-
+    //get args
     string opr = "-";
+    string dst = $$->temp = newtemp(type);
     string src1 = "0";
     string src2 = $2->temp;
 
-    cout << milCompute(opr, dst, src1, src2);
+    //generate code
+    string code;
+    code += $2->code;
+    code += milDeclare(dst);
+    code += milCompute(opr, dst, src1, src2);
 
     delete $2;
   }
@@ -553,20 +572,21 @@ Term :
   {
     $$ = new NonTerminal();
 
+    //get arguments
     string dst = $$->temp = newtemp(SYM_INT);
-    cout << milDeclare(dst);
-
-    //add param for each expression in Term__
+    string functionName = $1;
     list<NonTerminal> params = $3->ntlist;
+
+    //generate code
+    string code;
+    code += milDeclare(dst);
+    //add params
     list<NonTerminal>::iterator it;
     for(it = params.begin(); it != params.end(); it++){
-      string temp = it->temp;
-      cout << milGenInstruction("param", temp);
+      code += milGenInstruction("param", it->temp);
     }
+    code += milFunctionCall(functionName, dst);
 
-    //call function
-    string functionName = $1;
-    cout << milFunctionCall(functionName, dst);
     delete $3;
   }
 ;
@@ -587,14 +607,15 @@ Term_ :
 
       case SYM_ARR:
       {
-        //dereference array
+        //get args
         string dst = $$->temp = newtemp(SYM_INT);
         string src = $1->temp;
         string index = $1->index;
 
-        //generate instructions
-        cout << milDeclare(dst);
-        cout << milGenInstruction("=[]", dst, src, index);
+        //generate code
+        string code;
+        code += milDeclare(dst);
+        code += milGenInstruction("=[]", dst, src, index);
       }
       break;
 
@@ -614,8 +635,8 @@ Term_ :
   }
 | L_PAREN Expression R_PAREN
   {
-    $$ = new NonTerminal();
-    $$->temp = $2->temp;
+    $$ = new NonTerminal($2->temp);
+    $$->code = $2->code;
     delete $2;
   }
 ;
