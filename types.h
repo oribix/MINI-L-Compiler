@@ -15,6 +15,7 @@ map<string, SymbolType> symboltable;
 class NonTerminal {
   public:
     string temp;
+    string code;
     NonTerminal();
     NonTerminal(string temp);
 };
@@ -33,19 +34,6 @@ class Variable : public NonTerminal{
 };
 
 Variable::Variable(){}
-
-class BoolExpr : public NonTerminal{
-  public:
-    string code;
-    BoolExpr();
-    BoolExpr(string temp);
-};
-
-BoolExpr::BoolExpr(){}
-
-BoolExpr::BoolExpr(string temp){
-  this->temp = temp;
-}
 
 //wrapper for union
 class NTList{

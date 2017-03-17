@@ -26,7 +26,6 @@ int yylex(void);
 
   NonTerminal * nonterminal;
   Variable * variable;
-  BoolExpr * boolexpr;
   NTList * ntlist;
   string * temp;
   char* opval;
@@ -100,7 +99,7 @@ int yylex(void);
 
 %type <nonterminal> Term Term_;
 
-%type <boolexpr> BoolExpr RelationAndExpr RelationExpr RelationExpr_;
+%type <nonterminal> BoolExpr RelationAndExpr RelationExpr RelationExpr_;
 
 %type <ntlist> Term__;
 %type <variable> Var;
@@ -272,7 +271,7 @@ VarLoop :
 BoolExpr :
   BoolExpr OR RelationAndExpr
   {
-    $$ = new BoolExpr();
+    $$ = new NonTerminal();
 
     SymbolType type = getType($1->temp);
     string dst = $$->temp = newtemp(type);
@@ -292,7 +291,7 @@ BoolExpr :
   }
 | RelationAndExpr
   {
-    $$ = new BoolExpr($1->temp);
+    $$ = new NonTerminal($1->temp);
     $$->code = $1->code;
     delete $1;
   }
@@ -303,7 +302,7 @@ BoolExpr :
 RelationAndExpr :
   RelationAndExpr AND RelationExpr
   {
-    $$ = new BoolExpr();
+    $$ = new NonTerminal();
 
     SymbolType type = getType($1->temp);
     string dst = $$->temp = newtemp(type);
@@ -323,7 +322,7 @@ RelationAndExpr :
   }
 | RelationExpr
   {
-    $$ = new BoolExpr($1->temp);
+    $$ = new NonTerminal($1->temp);
     $$->code = $1->code;
     delete $1;
   }
@@ -333,13 +332,13 @@ RelationAndExpr :
 RelationExpr :
   RelationExpr_
   {
-    $$ = new BoolExpr($1->temp);
+    $$ = new NonTerminal($1->temp);
     $$->code = $1->code;
     delete $1;
   }
 | NOT RelationExpr_
   {
-    $$ = new BoolExpr();
+    $$ = new NonTerminal();
 
     //print mil code to invert RelationExpr_
     string dst = $$->temp = newtemp(SYM_INT);
@@ -359,7 +358,7 @@ RelationExpr :
 RelationExpr_ :
   Expression Comp Expression
   {
-    $$ = new BoolExpr();
+    $$ = new NonTerminal();
 
     //get arguments
     string lhs = $1->temp;
@@ -380,7 +379,7 @@ RelationExpr_ :
   }
 | TRUE
   {
-    $$ = new BoolExpr("1");
+    $$ = new NonTerminal("1");
 
     /*
     //get arguments
@@ -395,11 +394,11 @@ RelationExpr_ :
   }
 | FALSE
   {
-    $$ = new BoolExpr("0");
+    $$ = new NonTerminal("0");
   }
 | L_PAREN BoolExpr R_PAREN
   {
-    $$ = new BoolExpr();
+    $$ = new NonTerminal();
     $$->temp = $2->temp;
     $$->code = $2->code;
 
@@ -428,18 +427,14 @@ Expression :
     if(lhstype != rhstype)
       codeGenError("Expression", 1);
 
-    //create new temp an declare it
+    //get args
     string dst = $$->temp = newtemp(lhstype);
-    cout << milDeclare(dst);
-
-    //get temps from each side
     string src1 = $1->temp;
     string src2 = $3->temp;
-
-    //get operator
     string opr = $2;
 
-    //generate mil instruction
+    //generate code
+    cout << milDeclare(dst);
     cout << milCompute(opr, dst, src1, src2);
 
     //delete the children
@@ -625,9 +620,6 @@ ExpressionLoop :
 Var :
   IDENTIFIER L_SQUARE_BRACKET Expression R_SQUARE_BRACKET
   {
-    //todo:
-    //may need new class for this...
-    //identifier[index] can be written or read depending on context
     $$ = new Variable();
     string id = $1;
 
@@ -639,8 +631,13 @@ Var :
       cout << id << " was not declared!" << endl;
     }
 
+    //get args
+    //string dst = $$->temp = newtemp(SYM_ARR);
     $$->temp = id;
     $$->index = $3->temp;
+
+    //generate code
+    //cout << milDeclare(dst);
 
     delete $3;
   }
@@ -657,8 +654,13 @@ Var :
       cout << id << " was not declared!" << endl;
     }
 
+    //get args
+    //string dst = $$->temp = newtemp(SYM_INT);
     $$->temp = id;
     $$->index = -1;
+
+    //generate code
+    //cout << milDeclare(dst);
   }
 ;
 
