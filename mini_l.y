@@ -99,6 +99,8 @@ int yylex(void);
 
 %type <nonterminal> Statement;
 %type <ntlist> StatementLoop;
+%type <ntlist> IdentifierLoop;
+%type <nonterminal> Declaration;
 
 %type <nonterminal> Term Term_;
 
@@ -161,17 +163,54 @@ StatementLoop :
 
 Declaration :
   IdentifierLoop COLON Declaration_ INTEGER
+  {
+    $$ = new NonTerminal();
+
+    //get arguments
+    //string lhs = $1->temp;
+    //string rhs = $3->temp;
+    //string dst = $$->temp = newtemp(SYM_INT);
+    //string opr = $2;
+
+    //generate code
+    //string code;
+    //code += $1->code;
+    //code += $3->code;
+    //code += milDeclare(dst);
+    //code += milCompute(opr, dst, lhs, rhs);
+    //$$->code = code;
+
+    //delete $1;
+    //delete $3;
+   }
 | error {yyerrok;}
 ;
 
 Declaration_ :
   ARRAY L_SQUARE_BRACKET NUMBER R_SQUARE_BRACKET OF
+  {
+    //$$ = new NTList();
+    //NonTermianl nt = NonTermianl($1);
+    //$$->ntlist.push_back(nt);
+    //string lhs = $2->tmep;
+    //::string 
+     
+  }
 | /* epsilon */
 ;
 
 IdentifierLoop :
   IdentifierLoop COMMA IDENTIFIER
+  {
+    NonTerminal nt = NonTerminal($3);
+    $1->ntlist.push_back(nt);
+  }
 | IDENTIFIER
+  {
+    $$ = new NTList();
+    NonTerminal nt = NonTerminal($1);
+    $$->ntlist.push_back(nt);
+  }
 ;
 
 Statement :
@@ -208,7 +247,7 @@ Statement :
     cout << milGenInstruction("ret", $2->temp);
     delete $2;
   }
-;
+
 
 
 Assignment :
