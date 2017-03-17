@@ -27,6 +27,7 @@ int yylex(void);
   NonTerminal * nonterminal;
   Variable * variable;
   NTList * ntlist;
+  VList * vlist;
   string * temp;
   char* opval;
 
@@ -99,6 +100,7 @@ int yylex(void);
 %type <nonterminal> Expression MultiplicativeExpr;
 %type <ntlist> ExpressionLoop;
 
+
 %type <nonterminal> Statement;
 %type <ntlist> StatementLoop;
 
@@ -117,7 +119,7 @@ int yylex(void);
 
 %type <ntlist> Term__;
 %type <variable> Var;
-
+%type <vlist> VarLoop;
 //grammer rules - how to construct each nonterminal symbol from its parts
 
 %%
@@ -351,7 +353,16 @@ DoWhile :
 
 VarLoop :
   VarLoop COMMA Var
+  {
+    $1->vlist.push_back(*$3);
+    delete $3;
+  }
 | Var
+  {
+    $$ = new VList();
+    $$->vlist.push_back(*$1);
+    delete $1;
+  }
 ;
 
 

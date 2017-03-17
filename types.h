@@ -41,6 +41,11 @@ class NTList{
     list<NonTerminal> ntlist;
 };
 
+class VList{
+  public:
+    list<NonTerminal> vlist;
+};
+
 /*
 class Statement{
   public:
