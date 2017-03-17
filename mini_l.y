@@ -102,7 +102,10 @@ int yylex(void);
 %type <nonterminal> Statement;
 %type <ntlist> StatementLoop;
 %type <ntlist> IdentifierLoop;
+
 %type <nonterminal> Declaration;
+%type <nonterminal> Declaration_;
+
 
 %type <nonterminal> Assignment;
 
@@ -172,24 +175,13 @@ StatementLoop :
 Declaration :
   IdentifierLoop COLON Declaration_ INTEGER
   {
-    $$ = new NonTerminal();
-
-    //get arguments
-    //string lhs = $1->temp;
-    //string rhs = $3->temp;
-    //string dst = $$->temp = newtemp(SYM_INT);
-    //string opr = $2;
-
-    //generate code
-    //string code;
-    //code += $1->code;
-    //code += $3->code;
-    //code += milDeclare(dst);
-    //code += milCompute(opr, dst, lhs, rhs);
-    //$$->code = code;
-
-    //delete $1;
-    //delete $3;
+	list<NonTerminal> id = $1->ntlist;
+	list<NonTerminal>::iterator it;
+	for (it = id.begin(); it != id.end(); it++)
+	{
+		milDeclare(it->temp);
+	}      
+    
    }
 | error {yyerrok;}
 ;
@@ -197,14 +189,20 @@ Declaration :
 Declaration_ :
   ARRAY L_SQUARE_BRACKET NUMBER R_SQUARE_BRACKET OF
   {
-    //$$ = new NTList();
-    //NonTermianl nt = NonTermianl($1);
-    //$$->ntlist.push_back(nt);
-    //string lhs = $2->tmep;
-    //::string 
-     
+    $$ = new NonTerminal();
+
+    //get arguments
+    stringstream s;
+    s << $3;
+    $$->temp = s.str();
+
+
+
   }
 | /* epsilon */
+	{
+	$$ = new NonTerminal();
+	}
 ;
 
 IdentifierLoop :

@@ -40,7 +40,7 @@ string milFunctionCall(string name, string dst){
 void codeGenError(string rulename, int ruleNum){
   cout << endl << "ERROR in " << rulename << " rule " << ruleNum
        << endl << endl;
-  exit(-1);
+  //exit(-1);
 }
 
 #endif
