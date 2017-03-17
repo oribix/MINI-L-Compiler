@@ -15,5 +15,6 @@ class NonTerminal;
 class Variable;
 class NTList;
 class STE;
+class VList;
 
 #endif
