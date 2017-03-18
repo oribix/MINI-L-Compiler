@@ -878,6 +878,7 @@ Term_ :
         string code;
         code += milDeclare(dst);
         code += milGenInstruction("=[]", dst, src, index);
+        $$->code = code;
       }
       break;
 
