@@ -408,7 +408,16 @@ Statement :
 | RETURN Expression
   {
     $$ = new NonTerminal();
-    $$->code = milGenInstruction("ret", $2->temp);
+
+    //get arguments
+    string result = $2->temp;
+
+    //generate code
+    string code;
+    code += $2->code;
+    code += milGenInstruction("ret", result);
+    $$->code = code;
+
     delete $2;
   }
 
@@ -467,7 +476,6 @@ IfStatement :
     string ifbody = newlabel();
     string elsebody = newlabel();
     string end = newlabel();
-    
 
     //generate code
     string code;
@@ -875,6 +883,7 @@ Term :
     //add params
     list<NonTerminal>::iterator it;
     for(it = params.begin(); it != params.end(); it++){
+      code += it->code;
       code += milGenInstruction("param", it->temp);
     }
     code += milFunctionCall(functionName, dst);
