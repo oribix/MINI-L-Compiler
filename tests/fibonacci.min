@@ -1,11 +1,14 @@
 function fibonacci;
 beginparams
-	n : integer;
+	k : integer;
 endparams
 beginlocals
+f1 : integer;
+f2 : integer;
 endlocals
 beginbody
-	return fibonacci(n - 1) + fibonacci(n - 2);
+  if(k <= 1) then return 1; endif;
+	return fibonacci(k - 1) + fibonacci(k - 2);
 endbody
 
 function main;
