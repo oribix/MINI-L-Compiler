@@ -107,9 +107,8 @@ int yylex(void);
 
 %type <ntlist> IdentifierLoop;
 
-%type <nonterminal> Declaration;
-%type <nonterminal> Declaration_;
-
+%type <ntlist> DecLoop;
+%type <nonterminal> Declaration Declaration_;
 
 %type <nonterminal> Assignment;
 %type <nonterminal> WhileLoop DoWhile IfStatement;
@@ -190,10 +189,18 @@ Params :
   {
     $$ = new NonTerminal();
 
+    //get args
+    list<NonTerminal> decs = $2->ntlist;
+
     //generate code
     string code;
-    //for each entry in DecLoop generate code
+    list<NonTerminal>::iterator it;
+    for(it = decs.begin(); it != decs.end(); it ++){
+      code += it->code;
+    }
     $$->code = code;
+
+    delete $2;
   }
 ;
 
@@ -202,10 +209,18 @@ Locals :
   {
     $$ = new NonTerminal();
 
+    //get args
+    list<NonTerminal> decs = $2->ntlist;
+
     //generate code
     string code;
-    //for each entry in DecLoop generate code
+    list<NonTerminal>::iterator it;
+    for(it = decs.begin(); it != decs.end(); it ++){
+      code += it->code;
+    }
     $$->code = code;
+
+    delete $2;
   }
 ;
 
@@ -230,7 +245,14 @@ Body :
 
 DecLoop :
   DecLoop Declaration Semicolon
+  {
+    $1->ntlist.push_back(*$2);
+    delete $2;
+  }
 | /* epsilon */
+  {
+    $$ = new NTList();
+  }
 ;
 
 StatementLoop :
@@ -251,12 +273,27 @@ StatementLoop :
 Declaration :
   IdentifierLoop COLON Declaration_ INTEGER
   {
-    list<NonTerminal> id = $1->ntlist;
+    $$ = new NonTerminal();
+
+    //get args
+    list<NonTerminal> identifiers = $1->ntlist;
+    string arraysize = $3->temp;
+
+    //gen code
+    string code;
     list<NonTerminal>::iterator it;
-    for (it = id.begin(); it != id.end(); it++)
-    {
-      milDeclare(it->temp);
+    for (it = identifiers.begin(); it != identifiers.end(); it++){
+      if(arraysize != ""){
+        code += milGenInstruction(".[]", it->temp, arraysize);
+      }
+      else{
+        code += milDeclare(it->temp);
+      }
     }
+    $$->code = code;
+
+    delete $1;
+    delete $3;
   }
 | error {yyerrok;}
 ;
@@ -296,21 +333,25 @@ Statement :
   {
     $$ = new NonTerminal();
     $$->code = $1->code;
+    delete $1;
   }
 | IfStatement
   {
     $$ = new NonTerminal();
     $$->code = $1->code;
+    delete $1;
   }
 | WhileLoop
   {
     $$ = new NonTerminal();
     $$->code = $1->code;
+    delete $1;
   }
 | DoWhile
   {
     $$ = new NonTerminal();
     $$->code = $1->code;
+    delete $1;
   }
 | READ VarLoop
   {
