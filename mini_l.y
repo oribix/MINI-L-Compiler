@@ -379,6 +379,24 @@ Statement :
 | WRITE VarLoop
   {
     $$ = new NonTerminal();
+
+    list<Variable> vlist = $2->vlist;
+
+    string code;
+    list<Variable>::iterator it;
+    for(it = vlist.begin(); it != vlist.end(); it++){
+      string dst = it->temp;
+      SymbolType type = getType(dst);
+      if(type == SYM_INT){
+        code += milGenInstruction(".>", dst);
+      }
+      else{
+        code += milGenInstruction(".[]>", dst, it->index);
+      }
+    }
+    $$->code = code;
+
+    delete $2;
   }
 | CONTINUE
   {
