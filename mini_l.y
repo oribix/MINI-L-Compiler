@@ -162,7 +162,7 @@ Function :
     code += $2->code;
     code += $3->code;
     code += $4->code;
-    code += "endfunc/n/n";
+    code += "endfunc\n\n";
     $$->code = code;
 
     delete $1;
