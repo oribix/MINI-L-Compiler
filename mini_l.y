@@ -162,6 +162,7 @@ Function :
     code += $2->code;
     code += $3->code;
     code += $4->code;
+    code += "endfunc/n/n";
     $$->code = code;
 
     delete $1;
@@ -179,7 +180,7 @@ FunctionDec:
 
     //generate code
     string code;
-    code += milGenInstruction(":", functionName);
+    code += milGenInstruction("func", functionName);
     $$->code = code;
   }
 ;
