@@ -95,7 +95,8 @@ int yylex(void);
 %type <sval> AddSub MultOP;
 %type <sval> Comp;
 
-%type <nonterminal> FunctionDec;
+%type <nonterminal> FunctionLoop Function
+%type <nonterminal> FunctionDec Params Locals Body;
 
 %type <nonterminal> Expression MultiplicativeExpr;
 %type <ntlist> ExpressionLoop;
@@ -111,7 +112,7 @@ int yylex(void);
 
 
 %type <nonterminal> Assignment;
-%type <nonterminal> WhileLoop;
+%type <nonterminal> WhileLoop DoWhile IfStatement;
 
 %type <nonterminal> Term Term_;
 
@@ -125,35 +126,106 @@ int yylex(void);
 %%
 Program :
   FunctionLoop
+  {
+    cout << $1->code << endl;
+    delete $1;
+  }
 ;
 
 FunctionLoop :
   FunctionLoop Function
+  {
+    $$ = new NonTerminal();
+
+    //generate code
+    string code;
+    code += $1->code;
+    code += $2->code;
+    $$->code  = code;
+
+    delete $1;
+    delete $2;
+  }
 | /* epsilon */
+  {
+    $$ = new NonTerminal();
+  }
 ;
 
 Function :
   FunctionDec Params Locals Body
+  {
+    $$ = new NonTerminal();
+
+    //generate code
+    string code;
+    code += $1->code;
+    code += $2->code;
+    code += $3->code;
+    code += $4->code;
+    $$->code = code;
+
+    delete $1;
+    delete $2;
+    delete $3;
+    delete $4;
+  }
 ;
 
 FunctionDec:
   FUNCTION IDENTIFIER Semicolon
   {
+    $$ = new NonTerminal();
     string functionName = $2;
-    cout << milGenInstruction(":", functionName);
+
+    //generate code
+    string code;
+    code += milGenInstruction(":", functionName);
+    $$->code = code;
   }
 ;
 
 Params :
   BEGINPARAMS DecLoop ENDPARAMS
+  {
+    $$ = new NonTerminal();
+
+    //generate code
+    string code;
+    //for each entry in DecLoop generate code
+    $$->code = code;
+  }
 ;
 
 Locals :
   BEGINLOCALS DecLoop ENDLOCALS
+  {
+    $$ = new NonTerminal();
+
+    //generate code
+    string code;
+    //for each entry in DecLoop generate code
+    $$->code = code;
+  }
 ;
 
 Body :
   BEGINBODY StatementLoop ENDBODY
+  {
+    $$ = new NonTerminal();
+
+    //get args
+    list<NonTerminal> statements = $2->ntlist;
+
+    //generate code
+    string code;
+    //for each entry in StatementLoop generate code
+    list<NonTerminal>::iterator it;
+    for(it = statements.begin(); it != statements.end(); it++){
+      code += it->code;
+    }
+    $$->code = code;
+  }
 ;
 
 DecLoop :
@@ -227,31 +299,35 @@ Statement :
   }
 | IfStatement
   {
-  $$ = new NonTerminal();
+    $$ = new NonTerminal();
+    $$->code = $1->code;
   }
 | WhileLoop
   {
-  $$ = new NonTerminal();
+    $$ = new NonTerminal();
+    $$->code = $1->code;
   }
 | DoWhile
   {
-  $$ = new NonTerminal();
+    $$ = new NonTerminal();
+    $$->code = $1->code;
   }
 | READ VarLoop
   {
-  $$ = new NonTerminal();
+    $$ = new NonTerminal();
   }
 | WRITE VarLoop
   {
-  $$ = new NonTerminal();
+    $$ = new NonTerminal();
   }
 | CONTINUE
   {
-  $$ = new NonTerminal();
+    $$ = new NonTerminal();
   }
 | RETURN Expression
   {
-    cout << milGenInstruction("ret", $2->temp);
+    $$ = new NonTerminal();
+    $$->code = milGenInstruction("ret", $2->temp);
     delete $2;
   }
 
@@ -296,6 +372,9 @@ Assignment :
 
 IfStatement :
   IF BoolExpr THEN StatementLoop OptElse ENDIF
+  {
+    $$ = new NonTerminal();
+  }
 ;
 
 OptElse :
@@ -314,6 +393,7 @@ WhileLoop :
     string boolExprCode = $2->code;
     list<NonTerminal> statementlist = $4->ntlist;
 
+    //symantic check
     //todo: check if BoolExpr is correct type
     //SymbolType type = getType(boolexpr);
 
@@ -337,9 +417,6 @@ WhileLoop :
     code += milGenInstruction(":", end);
     $$->code = code;
 
-    //deleteme: test output
-    cout << code << flush;
-
     delete $2;
     delete $4;
   }
@@ -348,6 +425,36 @@ WhileLoop :
 
 DoWhile :
   DO BEGINLOOP StatementLoop ENDLOOP WHILE BoolExpr
+  {
+    $$ = new NonTerminal();
+
+    //get args
+    list<NonTerminal> statementlist = $3->ntlist;
+    string boolexpr = $6->temp;
+    string boolExprCode = $6->code;
+
+    //symantic check
+    //todo: check if BoolExpr is correct type
+    //SymbolType type = getType(boolexpr);
+    //if(SYM_INT != type) ERROR;
+
+    //generate labels
+    string begin = newlabel();
+
+    //generate code
+    string code;
+    code += milGenInstruction(":", begin);
+    list<NonTerminal>::iterator it;
+    for(it = statementlist.begin(); it != statementlist.end(); it++){
+      code += it->code;
+    }
+    code += boolExprCode;
+    code += milGenInstruction("?:=", begin, boolexpr);
+    $$->code = code;
+
+    delete $3;
+    delete $6;
+  }
 ;
 
 
