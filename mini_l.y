@@ -247,6 +247,7 @@ DecLoop :
   DecLoop Declaration Semicolon
   {
     $1->ntlist.push_back(*$2);
+    //addToSymbolTable($2->temp);
     delete $2;
   }
 | /* epsilon */
@@ -356,10 +357,46 @@ Statement :
 | READ VarLoop
   {
     $$ = new NonTerminal();
+
+    list<Variable> vlist = $2->vlist;
+
+    string code;
+    list<Variable>::iterator it;
+    for(it = vlist.begin(); it != vlist.end(); it++){
+      string dst = it->temp;
+      SymbolType type = getType(dst);
+      if(type == SYM_INT){
+        code += milGenInstruction(".<", dst);
+      }
+      else{
+        code += milGenInstruction(".[]<", dst, it->index);
+      }
+    }
+    $$->code = code;
+
+    delete $2;
   }
 | WRITE VarLoop
   {
     $$ = new NonTerminal();
+
+    list<Variable> vlist = $2->vlist;
+
+    string code;
+    list<Variable>::iterator it;
+    for(it = vlist.begin(); it != vlist.end(); it++){
+      string dst = it->temp;
+      SymbolType type = getType(dst);
+      if(type == SYM_INT){
+        code += milGenInstruction(".>", dst);
+      }
+      else{
+        code += milGenInstruction(".[]>", dst, it->index);
+      }
+    }
+    $$->code = code;
+
+    delete $2;
   }
 | CONTINUE
   {
@@ -920,6 +957,8 @@ Var :
 | IDENTIFIER
   {
     $$ = new Variable();
+
+    //get args
     string id = $1;
 
     //todo: delete this nephew
@@ -933,7 +972,6 @@ Var :
     //get args
     //string dst = $$->temp = newtemp(SYM_INT);
     $$->temp = id;
-    $$->index = -1;
 
     //generate code
     //cout << milDeclare(dst);
