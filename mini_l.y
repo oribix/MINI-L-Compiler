@@ -415,6 +415,33 @@ IfStatement :
   IF BoolExpr THEN StatementLoop OptElse ENDIF
   {
     $$ = new NonTerminal();
+
+    //get args
+    string boolexpr = $2->temp;
+    string boolExprCode = $2->code;
+    list<NonTerminal> statementlist = $4->ntlist;
+
+    //symantic check
+
+    //generate lables
+    string body = newlabel();
+    string end = newlabel();
+    
+    //generate code
+    string code;
+    code += boolExprCode;
+    code += milGenInstruction("?:=", body, boolexpr);
+    code += milGenInstruction(":=", end);
+    code += milGenInstruction(":", body);
+    list<NonTerminal>::iterator it;
+    for(it = statementlist.begin(); it != statementlist.end(); it++){
+      code += it->code;
+    }
+    code += milGenInstruction(":", end);
+    $$->code = code;
+
+    delete $2;
+    delete $4;
   }
 ;
 
