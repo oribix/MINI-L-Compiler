@@ -240,6 +240,8 @@ Body :
       code += it->code;
     }
     $$->code = code;
+
+    delete $2;
   }
 ;
 
@@ -827,6 +829,7 @@ Term :
     code += $2->code;
     code += milDeclare(dst);
     code += milCompute(opr, dst, src1, src2);
+    $4->code = code;
 
     delete $2;
   }
@@ -848,6 +851,7 @@ Term :
       code += milGenInstruction("param", it->temp);
     }
     code += milFunctionCall(functionName, dst);
+    $$->code = code;
 
     delete $3;
   }
