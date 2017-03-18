@@ -43,7 +43,7 @@ class NTList{
 
 class VList{
   public:
-    list<NonTerminal> vlist;
+    list<Variable> vlist;
 };
 
 /*
@@ -62,8 +62,14 @@ bool lookupSTE(string s){
   else return false;
 }
 
+//gets type of symbol from symbol table
 SymbolType getType(string symname){
   return symboltable[symname];
+}
+
+//add symbol with type to symbol table
+void addToSymbolTable(string name, SymbolType type){
+  symboltable[name] = type;
 }
 
 //returns a new temporary each time
