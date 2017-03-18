@@ -7,6 +7,7 @@
 using namespace std;
 
 #include <iostream>
+#include <cstdlib>
 #include <stdio.h>
 #include <string>
 #include <sstream>
