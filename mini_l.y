@@ -111,7 +111,7 @@ int yylex(void);
 %type <nonterminal> Declaration Declaration_;
 
 %type <nonterminal> Assignment;
-%type <nonterminal> WhileLoop DoWhile IfStatement;
+%type <nonterminal> WhileLoop DoWhile IfStatement OptElse;
 
 %type <nonterminal> Term Term_;
 
@@ -463,19 +463,24 @@ IfStatement :
     //symantic check
 
     //generate lables
-    string body = newlabel();
+    string ifbody = newlabel();
+    string elsebody = newlabel();
     string end = newlabel();
     
+
     //generate code
     string code;
     code += boolExprCode;
-    code += milGenInstruction("?:=", body, boolexpr);
-    code += milGenInstruction(":=", end);
-    code += milGenInstruction(":", body);
+    code += milGenInstruction("?:=", ifbody, boolexpr);
+    code += milGenInstruction(":=", elsebody);
+    code += milGenInstruction(":", ifbody);
     list<NonTerminal>::iterator it;
     for(it = statementlist.begin(); it != statementlist.end(); it++){
       code += it->code;
     }
+    code += milGenInstruction(":=", end);
+    code += milGenInstruction(":", elsebody);
+    code += $5->code;
     code += milGenInstruction(":", end);
     $$->code = code;
 
@@ -486,7 +491,28 @@ IfStatement :
 
 OptElse :
   ELSE StatementLoop
+  {
+  $$ = new NonTerminal();
+
+  //get args
+  list<NonTerminal> statements = $2->ntlist;
+
+  //symantic check
+
+  //generate code
+  string code;
+  list<NonTerminal>::iterator it;
+  for (it = statements.begin(); it != statements.end(); it++){
+    code += it->code;
+  }
+
+    $$->code = code;
+    delete $2;
+  }
 | /* epsilon */
+  {
+    $$ = new NonTerminal();
+  }
 ;
 
 
