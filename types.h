@@ -46,14 +46,15 @@ class VList{
     list<Variable> vlist;
 };
 
-/*
-class Statement{
+class Declaration : public NonTerminal{
   public:
-    string begin;
-    string after;
-    string code;
+    list<string> identifiers;
 };
-*/
+
+class DList{
+  public:
+    list<Declaration> dlist;
+};
 
 //looks through symbol table for the corrosponding entry
 //returns according to whether the entry was found or not

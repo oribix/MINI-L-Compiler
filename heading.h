@@ -15,6 +15,8 @@ using namespace std;
 class NonTerminal;
 class Variable;
 class NTList;
+class DList;
+class Declaration;
 class STE;
 class VList;
 

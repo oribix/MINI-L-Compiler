@@ -26,8 +26,10 @@ int yylex(void);
 
   NonTerminal * nonterminal;
   Variable * variable;
+  Declaration * declaration;
   NTList * ntlist;
   VList * vlist;
+  DList * dlist;
   string * temp;
   char* opval;
 
@@ -107,8 +109,10 @@ int yylex(void);
 
 %type <ntlist> IdentifierLoop;
 
-%type <ntlist> DecLoop;
-%type <nonterminal> Declaration Declaration_;
+%type <dlist> DecLoop;
+
+%type <declaration> Declaration;
+%type <nonterminal> Declaration_;
 
 %type <nonterminal> Assignment;
 %type <nonterminal> WhileLoop DoWhile IfStatement OptElse;
@@ -191,13 +195,23 @@ Params :
     $$ = new NonTerminal();
 
     //get args
-    list<NonTerminal> decs = $2->ntlist;
+    list<Declaration> decs = $2->dlist;
 
     //generate code
     string code;
-    list<NonTerminal>::iterator it;
+    int i = 0;
+    list<Declaration>::iterator it;
     for(it = decs.begin(); it != decs.end(); it ++){
       code += it->code;
+      list<string> identifiers = it->identifiers;
+      list<string>::iterator jt;
+      for(jt = identifiers.begin(); jt != identifiers.end(); jt++){
+        string id = *jt;
+        stringstream ss;
+        ss << "$" << i++;
+        string param = ss.str();
+        code += milGenInstruction("=", id, param);
+      }
     }
     $$->code = code;
 
@@ -211,11 +225,11 @@ Locals :
     $$ = new NonTerminal();
 
     //get args
-    list<NonTerminal> decs = $2->ntlist;
+    list<Declaration> decs = $2->dlist;
 
     //generate code
     string code;
-    list<NonTerminal>::iterator it;
+    list<Declaration>::iterator it;
     for(it = decs.begin(); it != decs.end(); it ++){
       code += it->code;
     }
@@ -249,13 +263,13 @@ Body :
 DecLoop :
   DecLoop Declaration Semicolon
   {
-    $1->ntlist.push_back(*$2);
+    $1->dlist.push_back(*$2);
     //addToSymbolTable($2->temp);
     delete $2;
   }
 | /* epsilon */
   {
-    $$ = new NTList();
+    $$ = new DList();
   }
 ;
 
@@ -277,7 +291,8 @@ StatementLoop :
 Declaration :
   IdentifierLoop COLON Declaration_ INTEGER
   {
-    $$ = new NonTerminal();
+    //
+    $$ = new Declaration();
 
     //get args
     list<NonTerminal> identifiers = $1->ntlist;
@@ -293,6 +308,7 @@ Declaration :
       else{
         code += milDeclare(it->temp);
       }
+      $$->identifiers.push_back(it->temp);
     }
     $$->code = code;
 
